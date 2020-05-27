@@ -3,72 +3,111 @@
 // How to run this code?
 // root -b -l -q makePlots_electron_eachYear.C
 
-TString workdir = "/data6/Users/helee/HN_Plotter/";
+TString workdir = "/data6/Users/helee/working_HN_Plotter/";
 TString SKFlatVersion = "Run2Legacy_v4";
 TString skim = "SkimTree_Dilepton";
 TString analyzer = "HNtypeI_SR";
 TString file_path = "";
-vector<TString> IDname = {"HN16", "HNV2"}; // "HNV2"
-vector<TString> channel = {"diel", "emu"};
-vector<TString> txt_channel = {"e^{#pm}e^{#pm}", "e^{#pm}#mu^{#pm}"};
-vector<TString> PDname = {"DoubleEG", "MuonEG"};
+/*vector<TString> IDname = {"HN16", "HNV2"}; // "HNV2"
+vector<TString> channel = {"diel"};
+vector<TString> txt_channel = {"e^{#pm}e^{#pm}"};
+vector<TString> PDname = {"DoubleEG"};
 vector<TString> region = {"Pre"}; //  Preselection, signal/control regions
 vector<TString> txt_region = {"Preselection"};
 vector<TString> histname = {"", };
-vector<TString> variable = {"", };
+vector<TString> variable = {"", };*/
 vector<TString> year = {"2016", "2017", "2018"}; // "2017", "2018"
 vector<TString> luminosity = {"35.9", "41.5", "59.7"}; // "41.5", "59.7"
 vector<TString> ZGname = {"ZGTo2LG", "ZGToLLG_01J", "ZGToLLG_01J"};
 vector<TString> WGname = {"WGToLNuG", "WGToLNuG_01J", "WGToLNuG_01J"};
 
 const int MCNumber = 25;
-int rebin = 0, minBinNumber = 0, maxBinNumber = 0, maxBinNumber_total = 0, maxBinNumber_temp = 0;
+int maxBinNumber_total = 0, maxBinNumber_temp = 0;
 double minRange = 0., maxRange = 0., binContent = 0., binError = 0., binError_Stat = 0., binError_Syst = 0.;
 double max_Data = 0., max_Background = 0., max_Hist = 0.;
 
 void FixOverflows(TH1D *hist, int maxBin, int maxBin_total);
 
 void makePlots_electron_eachYear(){
-  for(int it_id=0; it_id<IDname.size(); it_id++){
-    for(int it_ch=0; it_ch<channel.size(); it_ch++){
-      for(int it_rg=0; it_rg<region.size(); it_rg++){
+//  for(int it_id=0; it_id<IDname.size(); it_id++){
+//    for(int it_ch=0; it_ch<channel.size(); it_ch++){
+//      for(int it_rg=0; it_rg<region.size(); it_rg++){
 
         // Set histogram name and x-axis name
 //        histname = {"Number_Jets", "Number_BJets_Medium", "Number_FatJets", "Lep1_Pt", "Lep2_Pt", "MET", "MET2ST"};
 //        variable = {"Number of AK4 jets", "Number of b-tagged jets", "Number of AK8 jets", "p_{T}(l_{1}) (GeV)", "p_{T}(l_{2}) (GeV)", "#slash{E}_{T}^{miss} (GeV)", "(#slash{E}_{T}^{miss})^{2}/S_{T} (GeV)"};
         // Just for test      
-        histname = {"MET"};
-        variable = {"#slash{E}_{T}^{miss} (GeV)"};
+//        histname = {"MET"};
+//        variable = {"#slash{E}_{T}^{miss} (GeV)"};
+  string histline;
+  ifstream in("histList_electron.txt");
+  while(getline(in, histline)){
+    std::istringstream is(histline);
+    TString channel, region, variable, IDname, txt_channel, PDname, txt_region, txt_variable;
+    int rebin, minBinNumber, maxBinNumber;
+    is >> channel;
+    is >> region;
+    is >> variable;
+    is >> IDname;
+    is >> rebin;
+    is >> minBinNumber;
+    is >> maxBinNumber;
 
-        if(region.at(it_rg)=="lowCR1" || region.at(it_rg)=="highCR1"){
+    if(channel == "diel"){
+      txt_channel = "e^{#pm}e^{#pm}";
+      PDname = "DoubleEG";
+    }
+    if(channel == "dimu"){
+      txt_channel = "#mu^{#pm}#mu^{#pm}";
+      PDname = "DoubleMuon";
+    }
+    if(channel == "emu"){
+      txt_channel = "e^{#pm}#mu^{#pm}";
+      PDname = "MuonEG";
+    }
+
+    // txt_region
+    if(region == "Pre") txt_region = "Preselection";
+
+    // txt_variable
+    if(variable == "MET") txt_variable = "#slash{E}_{T}^{miss} (GeV)";
+    if(variable == "MET2ST") txt_variable = "(#slash{E}_{T}^{miss})^{2}/S_{T} (GeV)";
+
+/*        if(region.at(it_rg)=="lowCR1" || region.at(it_rg)=="highCR1"){
           histname.push_back("l1jj_Mass"); histname.push_back("l2jj_Mass");
           variable.push_back("m(l_{1}jj) (GeV)"); variable.push_back("m(l_{2}jj) (GeV)");
         }
         if(region.at(it_rg) == "highCR2"){
           histname.push_back("l1J_Mass"); histname.push_back("l2J_Mass");
           variable.push_back("m(l_{1}J) (GeV)"); variable.push_back("m(l_{2}J) (GeV)");
-        }
+        }*/
 
-        for(int it_h=0; it_h<histname.size(); it_h++){
+//        for(int it_h=0; it_h<histname.size(); it_h++){
 
           TFile *f_Data[3], *f_Fake[3], *f_CF[3], *f_MC[MCNumber][3];
           TH1D *h_Data[3], *h_Fake[3], *h_CF[3], *h_Temp[3], *h_AllMC[3], *h_MC[MCNumber][3], *h_Error[3], *h_Error_Background1[3], *h_Error_Background2[3], *h_Ratio[3];
+          TCanvas *c1;
+          TPad *c_up, *c_down;
+          THStack *hs;
+          TLegend *lg, *lg2;
 
           for(int it_y=0; it_y<year.size(); it_y++){
             file_path = SKFlatVersion+"/"+analyzer+"/"+year.at(it_y)+"/";
 
             // PDname in 2018 : DoubleEG -> EGamma
-            if(it_y == 2) PDname.at(0) = "EGamma";
-            else PDname.at(0) = "DoubleEG";
+            if(channel == "diel"){
+              if(it_y == 2) PDname = "EGamma";
+              else PDname = "DoubleEG";
+            }
 
             //=========================================
             //==== Set input ROOT files
             //=========================================
 
             // DATA, Fake, CF
-            f_Data[it_y]   = new TFile(workdir+file_path+"DATA/"+analyzer+"_"+skim+"_"+PDname.at(it_ch)+".root");
-            f_Fake[it_y]   = new TFile(workdir+file_path+"RunFake__/DATA/"+analyzer+"_"+skim+"_"+PDname.at(it_ch)+".root");
-            f_CF[it_y]     = new TFile(workdir+file_path+"RunCF__/DATA/"+analyzer+"_"+skim+"_"+PDname.at(it_ch)+".root");
+            f_Data[it_y]   = new TFile(workdir+file_path+"DATA/"+analyzer+"_"+skim+"_"+PDname+".root");
+            f_Fake[it_y]   = new TFile(workdir+file_path+"RunFake__/DATA/"+analyzer+"_"+skim+"_"+PDname+".root");
+            f_CF[it_y] = new TFile(workdir+file_path+"RunCF__/DATA/"+analyzer+"_"+skim+"_"+PDname+".root");
             // MC : VV, VG
             f_MC[0][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim+"_WZTo3LNu_powheg.root"); 
             f_MC[1][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim+"_ZZTo4L_powheg.root");
@@ -105,12 +144,12 @@ void makePlots_electron_eachYear(){
             //=========================================
 
             // DATA, Fake, CF
-            h_Data[it_y]  = (TH1D*)f_Data[it_y]->Get(channel.at(it_ch)+"/"+region.at(it_rg)+"/"+histname.at(it_h)+"_"+IDname.at(it_id));
-            h_Fake[it_y]  = (TH1D*)f_Fake[it_y]->Get(channel.at(it_ch)+"/"+region.at(it_rg)+"/"+histname.at(it_h)+"_"+IDname.at(it_id));
-            h_CF[it_y]    = (TH1D*)f_CF[it_y]->Get(channel.at(it_ch)+"/"+region.at(it_rg)+"/"+histname.at(it_h)+"_"+IDname.at(it_id));
+            h_Data[it_y]  = (TH1D*)f_Data[it_y]->Get(channel+"/"+region+"/"+variable+"_"+IDname);
+            h_Fake[it_y]  = (TH1D*)f_Fake[it_y]->Get(channel+"/"+region+"/"+variable+"_"+IDname);
+            h_CF[it_y]    = (TH1D*)f_CF[it_y]->Get(channel+"/"+region+"/"+variable+"_"+IDname);
             // MC
             for(int it_mc=0; it_mc<MCNumber; it_mc++){
-              h_MC[it_mc][it_y] = (TH1D*)f_MC[it_mc][it_y]->Get(channel.at(it_ch)+"/"+region.at(it_rg)+"/"+histname.at(it_h)+"_"+IDname.at(it_id));
+              h_MC[it_mc][it_y] = (TH1D*)f_MC[it_mc][it_y]->Get(channel+"/"+region+"/"+variable+"_"+IDname);
             }
 
             h_Data[it_y]->SetDirectory(0);
@@ -138,18 +177,19 @@ void makePlots_electron_eachYear(){
               h_Temp[it_y]->SetBinContent(i, 0.);
               h_Temp[it_y]->SetBinError(i, 0.);
             }
+            h_Temp[it_y]->SetDirectory(0);
 
             //==== CANVAS
-            TCanvas *c1 = new TCanvas("c1", "", 1000, 1000);
+            c1 = new TCanvas("c1", "", 1000, 1000);
             c1->cd();
-            c1->SetLeftMargin(0.14);
+//            c1->SetLeftMargin(0.14);
 
             //==== PAD : drawing distribution
-            TPad *c_up = new TPad("c_up", "", 0, 0.25, 1, 1);
+            c_up = new TPad("c_up", "", 0, 0.25, 1, 1);
             c_up->SetTopMargin(0.08);
-            c_up->SetBottomMargin(0.011);
-            c_up->SetLeftMargin(0.12);
-            c_up->SetRightMargin(0.05);
+            c_up->SetBottomMargin(0.014);
+            c_up->SetLeftMargin(0.14);
+            c_up->SetRightMargin(0.04);
             c_up->Draw();
             c_up->cd();
 
@@ -158,32 +198,34 @@ void makePlots_electron_eachYear(){
             for(int it_mc=0; it_mc<MCNumber; it_mc++){
               if(h_MC[it_mc][it_y]) h_AllMC[it_y]->Add(h_MC[it_mc][it_y]);
             }
+            h_AllMC[it_y]->SetDirectory(0);
 
 /*            cout << h_MC[0][it_y]->GetNbinsX() << endl;  // result = 1000
             h_MC[0][it_y]->Rebin(20);
             cout << h_MC[0][it_y]->GetNbinsX() << endl;    // result = 1000/20 = 50 */
 
             // Set rebin
-            rebin = 1;
+/*            rebin = 1;
             if(histname.at(it_h).Contains("Pt") || histname.at(it_h).Contains("MET")) rebin = 10;  //  Events / 10 GeV
             if(histname.at(it_h).Contains("MET2ST")) rebin = 1;
-            if(histname.at(it_h).Contains("Mass")) rebin = 20;  //  Events / 20 GeV
+            if(histname.at(it_h).Contains("Mass")) rebin = 20;  //  Events / 20 GeV*/
 
             h_Data[it_y]->Rebin(rebin);
             h_Fake[it_y]->Rebin(rebin);
             h_CF[it_y]->Rebin(rebin);
             h_AllMC[it_y]->Rebin(rebin);
+            h_Temp[it_y]->Rebin(rebin);
 
             maxBinNumber_total = h_Data[it_y]->GetNbinsX();  // This is needed for adding overflow bins
 
             // Set bins which will be contained in the plot
-            minBinNumber = 1, maxBinNumber = 20;
+/*            minBinNumber = 1, maxBinNumber = 20;
             if(histname.at(it_h).Contains("Jets")){
               maxBinNumber = 10;
               if(histname.at(it_h).Contains("BJets") || histname.at(it_h).Contains("FatJets")) maxBinNumber = 5;
             }
             if(histname.at(it_h).Contains("MET2ST")) maxBinNumber = 50;
-            if(histname.at(it_h).Contains("Mass")) maxBinNumber = 25;
+            if(histname.at(it_h).Contains("Mass")) maxBinNumber = 25;*/
 
             // This is needed for drawing a line in the ratio plot
             minRange = h_Data[it_y]->GetBinLowEdge(minBinNumber);
@@ -196,7 +238,7 @@ void makePlots_electron_eachYear(){
             FixOverflows(h_AllMC[it_y], maxBinNumber, maxBinNumber_total);
 
             // Stack & Draw MC
-            THStack *hs = new THStack("hs", "");
+            hs = new THStack("hs", "");
             h_CF[it_y]->SetLineWidth(0);
             h_CF[it_y]->SetFillColor(kYellow);
             hs->Add(h_CF[it_y]);
@@ -209,13 +251,15 @@ void makePlots_electron_eachYear(){
             hs->Draw("hist");
             hs->SetTitle("");
             hs->GetXaxis()->SetLabelSize(0.);
+            hs->GetYaxis()->SetLabelSize(0.04);
             hs->GetYaxis()->SetTitle("Events / "+TString::Itoa(rebin, 10)+" GeV");
-            hs->GetYaxis()->SetTitleSize(0.05);
-            hs->GetYaxis()->SetTitleOffset(1.2);
+            hs->GetYaxis()->SetTitleSize(0.075);
+            hs->GetYaxis()->SetTitleOffset(0.75);
             hs->GetXaxis()->SetRange(minBinNumber, maxBinNumber);
 
             // h_Error : A histogram for calcalating the total error of all backgrounds
-            h_Error[it_y] = (TH1D*)h_Fake[it_y]->Clone();
+            h_Error[it_y] = (TH1D*)h_Temp[it_y]->Clone();
+            if(h_Fake[it_y]) h_Error[it_y]->Add(h_Fake[it_y]);
             if(h_CF[it_y]) h_Error[it_y]->Add(h_CF[it_y]);
             if(h_AllMC[it_y]) h_Error[it_y]->Add(h_AllMC[it_y]); 
             h_Error[it_y]->SetDirectory(0);
@@ -252,7 +296,7 @@ void makePlots_electron_eachYear(){
             hs->SetMaximum(max_Hist*1.3);
 
             // Draw the legend
-            TLegend *lg = new TLegend(0.6, 0.45, 0.9, 0.85);
+            lg = new TLegend(0.6, 0.45, 0.9, 0.85);
             lg->AddEntry(h_Error[it_y], "Stat. + Syst. Uncertainty", "f");
             lg->AddEntry(h_Data[it_y], "Data", "lep");
             lg->AddEntry(h_AllMC[it_y], "Prompt background", "f");
@@ -267,33 +311,33 @@ void makePlots_electron_eachYear(){
             // Add text
             TLatex txt;
             txt.SetNDC();
-            txt.SetTextSize(0.04);
+            txt.SetTextSize(0.05);
             txt.SetTextAlign(32);
             txt.SetTextFont(42);
-            txt.DrawLatex(.94,.95, luminosity.at(it_y)+" fb^{-1} (13 TeV)");
+            txt.DrawLatex(.96,.96, luminosity.at(it_y)+" fb^{-1} (13 TeV)");
    
             TLatex txt2;
             txt2.SetNDC();
-            txt2.SetTextSize(0.04);
+            txt2.SetTextSize(0.05);
             txt2.SetTextAlign(12);
             txt2.SetTextFont(62);
-            txt2.DrawLatex(.17,.87, txt_channel.at(it_ch));
+            txt2.DrawLatex(.18,.88, txt_channel);
 
             TLatex txt3;
             txt3.SetNDC();
-            txt3.SetTextSize(0.04);
+            txt3.SetTextSize(0.05);
             txt3.SetTextAlign(12);
             txt3.SetTextFont(62);
-            txt3.DrawLatex(.17,.82, txt_region.at(it_rg));
+            txt3.DrawLatex(.18,.82, txt_region);
     
             c1->cd();
 
             // PAD : drawing ratio
-            TPad *c_down = new TPad("c_down", "", 0, 0, 1, 0.25);
+            c_down = new TPad("c_down", "", 0, 0, 1, 0.25);
             c_down->SetTopMargin(0.03);
-            c_down->SetBottomMargin(0.3);
-            c_down->SetLeftMargin(0.12);
-            c_down->SetRightMargin(0.05);
+            c_down->SetBottomMargin(0.35);
+            c_down->SetLeftMargin(0.14);
+            c_down->SetRightMargin(0.04);
 //            c_down->SetGridx();
 //            c_down->SetGridy();
             c_down->Draw();
@@ -320,16 +364,16 @@ void makePlots_electron_eachYear(){
             }
             h_Error_Background1[it_y]->SetTitle("");
             h_Error_Background1[it_y]->SetStats(0);
-            h_Error_Background1[it_y]->GetXaxis()->SetTitle(variable.at(it_h));
+            h_Error_Background1[it_y]->GetXaxis()->SetTitle(txt_variable);
             h_Error_Background1[it_y]->GetYaxis()->SetTitle("#frac{Obs.}{Pred.}");
             h_Error_Background1[it_y]->GetXaxis()->SetRange(minBinNumber, maxBinNumber);
             h_Error_Background1[it_y]->GetYaxis()->SetRangeUser(0., 2.);
-            h_Error_Background1[it_y]->GetXaxis()->SetLabelSize(0.09);
-            h_Error_Background1[it_y]->GetYaxis()->SetLabelSize(0.07);
-            h_Error_Background1[it_y]->GetXaxis()->SetTitleSize(0.12);
-            h_Error_Background1[it_y]->GetYaxis()->SetTitleSize(0.11);
-            h_Error_Background1[it_y]->GetXaxis()->SetTitleOffset(1.1);
-            h_Error_Background1[it_y]->GetYaxis()->SetTitleOffset(0.5);
+            h_Error_Background1[it_y]->GetXaxis()->SetLabelSize(0.12);
+            h_Error_Background1[it_y]->GetYaxis()->SetLabelSize(0.08);
+            h_Error_Background1[it_y]->GetXaxis()->SetTitleSize(0.16);
+            h_Error_Background1[it_y]->GetYaxis()->SetTitleSize(0.14);
+            h_Error_Background1[it_y]->GetXaxis()->SetTitleOffset(0.9);
+            h_Error_Background1[it_y]->GetYaxis()->SetTitleOffset(0.35);
 
             h_Error_Background1[it_y]->SetMarkerSize(0);
             h_Error_Background1[it_y]->SetLineWidth(0);
@@ -352,7 +396,7 @@ void makePlots_electron_eachYear(){
             h_Ratio[it_y]->SetMarkerStyle(20);
             h_Ratio[it_y]->Draw("ep same");
 
-            TLegend *lg2 = new TLegend(0.75, 0.88, 0.9, 0.95);
+            lg2 = new TLegend(0.75, 0.88, 0.9, 0.95);
             lg2->SetNColumns(2);
             lg2->AddEntry(h_Error_Background2[it_y], "Stat.", "f");
             lg2->AddEntry(h_Error_Background1[it_y], "Stat. + Syst.", "f");
@@ -373,7 +417,7 @@ void makePlots_electron_eachYear(){
             //==== Save plots
             //=========================================
 
-            c1->SaveAs("./plots_SR_eachYear/"+year.at(it_y)+"/"+channel.at(it_ch)+"/"+IDname.at(it_id)+"/"+histname.at(it_h)+"_"+region.at(it_rg)+"_"+year.at(it_y)+".png");
+            c1->SaveAs("./plots_SR_eachYear/"+year.at(it_y)+"/"+channel+"/"+IDname+"/"+variable+"_"+region+"_"+year.at(it_y)+".png");
 
             delete c_up;
             delete c_down;
@@ -402,9 +446,9 @@ void makePlots_electron_eachYear(){
             delete h_Ratio[it_y];
 
           }  // year
-        }  // hist
-      }  // region
-    }  // channel
+//        }  // hist
+//      }  // region
+//    }  // channel
   }  // ID
 }
 

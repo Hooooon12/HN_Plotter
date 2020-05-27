@@ -1,0 +1,4 @@
+diel	Pre	MET	HN16	10	1	20
+diel	Pre	MET2ST	HN16	1	1	50
+diel	Pre	MET	HNV2	10	1	20
+diel	Pre	MET2ST	HNV2	1	1	50
