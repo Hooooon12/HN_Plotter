@@ -1,0 +1,8 @@
+HN16	DYmm	Lep1_Pt	5	1	60
+HN16	DYmm	Lep2_Pt	5	1	60
+HN16	DYmm	MET	10	1	30
+HN16	DYmm	ZCand_Mass	1	60	300
+HN16	DYee	Lep1_Pt	5	1	60
+HN16	DYee	Lep2_Pt	5	1	60
+HN16	DYee	MET	10	1	30
+HN16	DYee	ZCand_Mass	1	60	300

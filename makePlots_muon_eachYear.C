@@ -390,7 +390,7 @@ void makePlots_muon_eachYear(){
       //==== Save plots
       //=========================================
 
-      c1->SaveAs("./plots_SR_eachYear/"+IDname+"/"+year.at(it_y)+"/"+channel+"/"+output_region+"/"+variable+".png");
+      c1->SaveAs("./plots_SR_eachYear/"+IDname+"/"+channel+"/"+output_region+"/"+variable+"_"+year.at(it_y)+".png");
 
       delete c_up;
       delete c_down;

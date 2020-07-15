@@ -1,99 +1,65 @@
 #include <iostream>
 
 // How to run this code?
-// root -b -l -q makePlots_electron_eachYear.C
+// root -b -l -q makePlots_DY_eachYear.C
 
 TString workdir = "/data6/Users/helee/working_HN_Plotter/";
 TString SKFlatVersion = "Run2Legacy_v4";
 TString skim = "SkimTree_Dilepton";
-TString analyzer = "HNtypeI_SR";
+TString analyzer = "HNtypeI_SM_CR";
 TString file_path = "";
 vector<TString> year = {"2016", "2017", "2018"};
 vector<TString> luminosity = {"35.9", "41.5", "59.7"};
 vector<TString> ZGname = {"ZGTo2LG", "ZGToLLG_01J", "ZGToLLG_01J"};
 vector<TString> WGname = {"WGToLNuG", "WGToLNuG_01J", "WGToLNuG_01J"};
 
-const int MCNumber = 25;
+const int MCNumber = 16;
 int maxBinNumber_total = 0, maxBinNumber_temp = 0;
 double minRange = 0., maxRange = 0., binContent = 0., binError = 0., binError_Stat = 0., binError_Syst = 0.;
 double max_Data = 0., max_Background = 0., max_Hist = 0.;
 
 void FixOverflows(TH1D *hist, int maxBin, int maxBin_total);
 
-void makePlots_electron_eachYear(){
+void makePlots_DY_eachYear(){
 
   string histline;
-  ifstream in("histList_electron.txt");
+  ifstream in("histList_DY.txt");
   // Line loop
   while(getline(in, histline)){
     std::istringstream is(histline);
-    TString IDname, channel, region, variable, txt_channel, PDname, txt_region, output_region, txt_variable;
+    TString IDname, region, variable, txt_region, output_region, txt_variable, PDname;
     int rebin, minBinNumber, maxBinNumber;
     is >> IDname;
-    is >> channel;
     is >> region;
     is >> variable;
     is >> rebin;
     is >> minBinNumber;
     is >> maxBinNumber;
 
-    // txt_channel, PDname
-    if(channel == "diel"){
-      txt_channel = "e^{#pm}e^{#pm}";
-      PDname = "DoubleEG";
-    }
-    if(channel == "dimu"){
-      txt_channel = "#mu^{#pm}#mu^{#pm}";
+    // txt_region, output_region
+    if(region == "DYmm"){
+      txt_region = "DY #mu^{#pm}#mu^{#mp}";
       PDname = "DoubleMuon";
     }
-    if(channel == "emu"){
-      txt_channel = "e^{#pm}#mu^{#pm}";
-      PDname = "MuonEG";
+    if(region == "DYee"){
+      txt_region = "DY e^{#pm}e^{#mp}";
+      PDname = "DoubleEG";
     }
-
-    // txt_region, output_region
-    if(region == "Pre") txt_region = "Preselection";
-    if(region == "lowCR1") txt_region = "Low Mass CR1";
-    if(region == "lowSR1") txt_region = "Low Mass SR1";
-    if(region == "lowCR2") txt_region = "Low Mass CR2";
-    if(region == "lowSR2") txt_region = "Low Mass SR2";
-    if(region == "highCR1") txt_region = "High Mass CR1";
-    if(region == "highSR1") txt_region = "High Mass SR1";
-    if(region == "highCR2") txt_region = "High Mass CR2";
-    if(region == "highSR2") txt_region = "High Mass SR2";
-    if(region == "fakeCR1") txt_region = "Non-prompt CR1";
-    if(region == "fakeCR2") txt_region = "Non-prompt CR2";
     output_region = region;
 
-    if(variable.Contains("nocut")){ // Preselection + jet requirement for each low/high mass region
-       txt_region = "Preselection";
-       output_region = "Pre";
-    }
-
     // txt_variable
-    if(variable.Contains("Number_Jets")) txt_variable = "Number of AK4 jets";
-    if(variable.Contains("Number_FatJets")) txt_variable = "Number of AK8 jets";
-    if(variable.Contains("Number_BJets")) txt_variable = "Number of b jets";
     if(variable.Contains("Lep1_Pt")) txt_variable = "p_{T}(l_{1}) (GeV)";
     if(variable.Contains("Lep2_Pt")) txt_variable = "p_{T}(l_{2}) (GeV)";
+    if(variable.Contains("Lep3_Pt")) txt_variable = "p_{T}(l_{3}) (GeV)";
+    if(variable.Contains("Mt")) txt_variable = "M_{T}(l,#slash{E}_{T}^{miss}) (GeV)";
     if(variable.Contains("MET")) txt_variable = "#slash{E}_{T}^{miss} (GeV)";
     if(variable.Contains("MET2ST")) txt_variable = "(#slash{E}_{T}^{miss})^{2}/S_{T} (GeV)";
-    if(variable.Contains("WCand1")) txt_variable = "m(lljj) (GeV)";
-    if(variable.Contains("WCand2")) txt_variable = "m(jj) (GeV)";
-    if(variable.Contains("llj")) txt_variable = "m(llj) (GeV)";
-    if(variable.Contains("l1j")) txt_variable = "m(l_{1}j) (GeV)";
-    if(variable.Contains("l2j")) txt_variable = "m(l_{2}j) (GeV)";
-    if(variable.Contains("lljj")) txt_variable = "m(lljj) (GeV)";
-    if(variable.Contains("l1jj")) txt_variable = "m(l_{1}jj) (GeV)";
-    if(variable.Contains("l2jj")) txt_variable = "m(l_{2}jj) (GeV)";
-    if(variable.Contains("l1J")) txt_variable = "m(l_{1}J) (GeV)";
-    if(variable.Contains("l2J")) txt_variable = "m(l_{2}J) (GeV)";
-    if(variable.Contains("FatJet_Pt")) txt_variable = "p_{T}(J) (GeV)";
-    if(variable.Contains("FatJet_Mass")) txt_variable = "m(J) (GeV)";
+    if(variable.Contains("ZCand")) txt_variable = "m(ll) (GeV)";
+    if(variable.Contains("TriLep")) txt_variable = "m(lll) (GeV)";
 
     // Declare variables needed for making plots 
-    TFile *f_Data[3], *f_Fake[3], *f_CF[3], *f_MC[MCNumber][3];
-    TH1D *h_Data[3], *h_Fake[3], *h_CF[3], *h_Temp[3], *h_AllMC[3], *h_MC[MCNumber][3], *h_Error[3], *h_Error_Background1[3], *h_Error_Background2[3], *h_Ratio[3];
+    TFile *f_Data[3], *f_Fake[3], *f_MC[MCNumber][3];
+    TH1D *h_Data[3], *h_Fake[3], *h_Temp[3], *h_Bundle[3][3], *h_MC[MCNumber][3], *h_Error[3], *h_Error_Background1[3], *h_Error_Background2[3], *h_Ratio[3];
     TCanvas *c1;
     TPad *c_up, *c_down;
     THStack *hs;
@@ -104,7 +70,7 @@ void makePlots_electron_eachYear(){
       file_path = SKFlatVersion+"/"+analyzer+"/"+year.at(it_y)+"/";
 
       // PDname in 2018 : DoubleEG -> EGamma
-      if(channel == "diel"){
+      if(region == "DYee"){
         if(it_y == 2) PDname = "EGamma";
         else PDname = "DoubleEG";
       }
@@ -113,31 +79,36 @@ void makePlots_electron_eachYear(){
       //==== Set input ROOT files
       //=========================================
 
-      // DATA, Fake, CF
+      // DATA, Fake
       f_Data[it_y]   = new TFile(workdir+file_path+"DATA/"+analyzer+"_"+skim+"_"+PDname+".root");
       f_Fake[it_y]   = new TFile(workdir+file_path+"RunFake__/DATA/"+analyzer+"_"+skim+"_"+PDname+".root");
-      f_CF[it_y]     = new TFile(workdir+file_path+"RunCF__/DATA/"+analyzer+"_"+skim+"_"+PDname+".root");
-      // MC : VV, VG
-      f_MC[0][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim+"_WZTo3LNu_powheg.root"); 
-      f_MC[1][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim+"_ZZTo4L_powheg.root");
-      f_MC[2][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim+"_"+ZGname.at(it_y)+".root");
+      // MC : DY, TTLL
+      f_MC[0][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim+"_DYJets.root");
+      f_MC[1][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim+"_TTLL_powheg.root");
+      // MC : VV
+      f_MC[2][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim+"_WW_pythia.root"); 
+      f_MC[3][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim+"_WZ_pythia.root");
+      f_MC[4][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim+"_ZZ_pythia.root");
+      /*f_MC[2][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim+"_"+ZGname.at(it_y)+".root");
       f_MC[3][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim+"_"+WGname.at(it_y)+".root");
       f_MC[4][it_y]  = new TFile(workdir+file_path+analyzer+"_WWTo2L2Nu_DS.root");
       f_MC[5][it_y]  = new TFile(workdir+file_path+analyzer+"_WpWp_EWK.root");
-      f_MC[6][it_y]  = new TFile(workdir+file_path+analyzer+"_WpWp_QCD.root");
+      f_MC[6][it_y]  = new TFile(workdir+file_path+analyzer+"_WpWp_QCD.root");*/
       // MC : VVV
-      f_MC[7][it_y]  = new TFile(workdir+file_path+analyzer+"_WWW.root");
-      f_MC[8][it_y]  = new TFile(workdir+file_path+analyzer+"_WWZ.root");
-      f_MC[9][it_y]  = new TFile(workdir+file_path+analyzer+"_WZZ.root");
-      f_MC[10][it_y] = new TFile(workdir+file_path+analyzer+"_ZZZ.root");
+      f_MC[5][it_y]  = new TFile(workdir+file_path+analyzer+"_WWW.root");
+      f_MC[6][it_y]  = new TFile(workdir+file_path+analyzer+"_WWZ.root");
+      f_MC[7][it_y]  = new TFile(workdir+file_path+analyzer+"_WZZ.root");
+      f_MC[8][it_y]  = new TFile(workdir+file_path+analyzer+"_ZZZ.root");
       // MC : Top
-      f_MC[11][it_y] = new TFile(workdir+file_path+analyzer+"_"+skim+"_ttWToLNu.root");
-      f_MC[12][it_y] = new TFile(workdir+file_path+analyzer+"_"+skim+"_ttZToLLNuNu.root");
-      f_MC[13][it_y] = new TFile(workdir+file_path+analyzer+"_"+skim+"_ttHToNonbb.root");
-      f_MC[14][it_y] = new TFile(workdir+file_path+analyzer+"_"+skim+"_TTG.root");
-      f_MC[15][it_y] = new TFile(workdir+file_path+analyzer+"_TG.root");
+      f_MC[9][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim+"_ttWToLNu.root");
+      f_MC[10][it_y] = new TFile(workdir+file_path+analyzer+"_"+skim+"_ttZToLLNuNu.root");
+      f_MC[11][it_y] = new TFile(workdir+file_path+analyzer+"_"+skim+"_ttHToNonbb.root");
+      f_MC[12][it_y] = new TFile(workdir+file_path+analyzer+"_SingleTop_tW_antitop_NoFullyHad.root");
+      f_MC[13][it_y] = new TFile(workdir+file_path+analyzer+"_SingleTop_tW_top_NoFullyHad.root");
+      f_MC[14][it_y] = new TFile(workdir+file_path+analyzer+"_ttWToQQ.root");
+      f_MC[15][it_y] = new TFile(workdir+file_path+analyzer+"_ttZToQQ.root");
       // MC : Higgs
-      f_MC[16][it_y] = new TFile(workdir+file_path+analyzer+"_ggHToZZTo4L.root");
+      /*f_MC[16][it_y] = new TFile(workdir+file_path+analyzer+"_ggHToZZTo4L.root");
       f_MC[17][it_y] = new TFile(workdir+file_path+analyzer+"_VBF_HToZZTo4L.root");
       f_MC[18][it_y] = new TFile(workdir+file_path+analyzer+"_VHToNonbb.root");
       // MC : ggZZTo4L
@@ -146,31 +117,28 @@ void makePlots_electron_eachYear(){
       f_MC[21][it_y] = new TFile(workdir+file_path+analyzer+"_ggZZTo2mu2tau.root");
       f_MC[22][it_y] = new TFile(workdir+file_path+analyzer+"_ggZZTo4e.root");
       f_MC[23][it_y] = new TFile(workdir+file_path+analyzer+"_ggZZTo4mu.root");
-      f_MC[24][it_y] = new TFile(workdir+file_path+analyzer+"_ggZZTo4tau.root");
+      f_MC[24][it_y] = new TFile(workdir+file_path+analyzer+"_ggZZTo4tau.root");*/
 
       //=========================================
       //==== Get histograms
       //=========================================
 
-      // DATA, Fake, CF
-      h_Data[it_y]  = (TH1D*)f_Data[it_y]->Get(channel+"/"+region+"/"+variable+"_"+IDname);
-      h_Fake[it_y]  = (TH1D*)f_Fake[it_y]->Get(channel+"/"+region+"/"+variable+"_"+IDname);
-      h_CF[it_y]    = (TH1D*)f_CF[it_y]->Get(channel+"/"+region+"/"+variable+"_"+IDname);
+      // DATA, Fake
+      h_Data[it_y]  = (TH1D*)f_Data[it_y]->Get(region+"/"+variable+"_"+IDname);
+      h_Fake[it_y]  = (TH1D*)f_Fake[it_y]->Get(region+"/"+variable+"_"+"HN16");
       // MC
       for(int it_mc=0; it_mc<MCNumber; it_mc++){
-        h_MC[it_mc][it_y] = (TH1D*)f_MC[it_mc][it_y]->Get(channel+"/"+region+"/"+variable+"_"+IDname);
+        h_MC[it_mc][it_y] = (TH1D*)f_MC[it_mc][it_y]->Get(region+"/"+variable+"_"+IDname);
       }
 
       h_Data[it_y]->SetDirectory(0);
       h_Fake[it_y]->SetDirectory(0);
-      h_CF[it_y]->SetDirectory(0);
       for(int it_mc=0; it_mc<MCNumber; it_mc++){
         if(h_MC[it_mc][it_y]) h_MC[it_mc][it_y]->SetDirectory(0);
       }
 
       f_Data[it_y]->Close();
       f_Fake[it_y]->Close();
-      f_CF[it_y]->Close();
       for(int it_mc=0; it_mc<MCNumber; it_mc++){
         f_MC[it_mc][it_y]->Close();
       }
@@ -197,20 +165,32 @@ void makePlots_electron_eachYear(){
       c_up->SetBottomMargin(0.017);
       c_up->SetLeftMargin(0.14);
       c_up->SetRightMargin(0.04);
+      c_up->SetLogy();
       c_up->Draw();
       c_up->cd();
 
-      // Merge all prompt backgrounds (MC)
-      h_AllMC[it_y] = (TH1D*)h_Temp[it_y]->Clone();
-      for(int it_mc=0; it_mc<MCNumber; it_mc++){
-        if(h_MC[it_mc][it_y]) h_AllMC[it_y]->Add(h_MC[it_mc][it_y]);
+      // Merge backgrounds
+      h_Bundle[0][it_y] = (TH1D*)h_Temp[it_y]->Clone();
+      h_Bundle[1][it_y] = (TH1D*)h_Temp[it_y]->Clone();
+      h_Bundle[2][it_y] = (TH1D*)h_Temp[it_y]->Clone();
+      for(int it_mc=2; it_mc<5; it_mc++){
+        if(h_MC[it_mc][it_y]) h_Bundle[0][it_y]->Add(h_MC[it_mc][it_y]);
+      }
+      for(int it_mc=5; it_mc<9; it_mc++){
+        if(h_MC[it_mc][it_y]) h_Bundle[1][it_y]->Add(h_MC[it_mc][it_y]);
+      }
+      for(int it_mc=9; it_mc<MCNumber; it_mc++){
+        if(h_MC[it_mc][it_y]) h_Bundle[2][it_y]->Add(h_MC[it_mc][it_y]);
       }
 
       // Rebin
       h_Data[it_y]->Rebin(rebin);
       h_Fake[it_y]->Rebin(rebin);
-      h_CF[it_y]->Rebin(rebin);
-      h_AllMC[it_y]->Rebin(rebin);
+      h_MC[0][it_y]->Rebin(rebin);
+      h_MC[1][it_y]->Rebin(rebin);
+      h_Bundle[0][it_y]->Rebin(rebin);
+      h_Bundle[1][it_y]->Rebin(rebin);
+      h_Bundle[2][it_y]->Rebin(rebin);
       h_Temp[it_y]->Rebin(rebin);
 
       maxBinNumber_total = h_Data[it_y]->GetNbinsX();  // This is needed for adding overflow bins
@@ -222,20 +202,32 @@ void makePlots_electron_eachYear(){
       // Fix overflows
       FixOverflows(h_Data[it_y], maxBinNumber, maxBinNumber_total);
       FixOverflows(h_Fake[it_y], maxBinNumber, maxBinNumber_total);
-      FixOverflows(h_CF[it_y], maxBinNumber, maxBinNumber_total);
-      FixOverflows(h_AllMC[it_y], maxBinNumber, maxBinNumber_total);
+      FixOverflows(h_Bundle[0][it_y], maxBinNumber, maxBinNumber_total);
+      FixOverflows(h_Bundle[1][it_y], maxBinNumber, maxBinNumber_total);
+      FixOverflows(h_Bundle[2][it_y], maxBinNumber, maxBinNumber_total);
 
       // Stack & Draw MC
       hs = new THStack("hs", "");
-      h_CF[it_y]->SetLineWidth(0);
-      h_CF[it_y]->SetFillColor(kYellow);
-      hs->Add(h_CF[it_y]);
-      h_Fake[it_y]->SetLineWidth(0);
-      h_Fake[it_y]->SetFillColor(kAzure+8);
-      hs->Add(h_Fake[it_y]);
-      h_AllMC[it_y]->SetLineWidth(0);
-      h_AllMC[it_y]->SetFillColor(kGreen+1);
-      hs->Add(h_AllMC[it_y]);
+      h_Bundle[2][it_y]->SetLineWidth(0);
+      h_Bundle[2][it_y]->SetFillColor(kSpring+10);
+      hs->Add(h_Bundle[2][it_y]);
+      h_Bundle[1][it_y]->SetLineWidth(0);
+      h_Bundle[1][it_y]->SetFillColor(kOrange);
+      hs->Add(h_Bundle[1][it_y]);
+      h_Bundle[0][it_y]->SetLineWidth(0);
+      h_Bundle[0][it_y]->SetFillColor(kGreen+1);
+      hs->Add(h_Bundle[0][it_y]);
+      h_MC[1][it_y]->SetLineWidth(0);
+      h_MC[1][it_y]->SetFillColor(kRed);
+      hs->Add(h_MC[1][it_y]);
+      if(IDname == "HN16"){
+        h_Fake[it_y]->SetLineWidth(0);
+        h_Fake[it_y]->SetFillColor(kAzure+8);
+        hs->Add(h_Fake[it_y]);
+      }
+      h_MC[0][it_y]->SetLineWidth(0);
+      h_MC[0][it_y]->SetFillColor(kYellow);
+      hs->Add(h_MC[0][it_y]);
       hs->Draw("hist");
       hs->SetTitle("");
       hs->GetXaxis()->SetLabelSize(0.);
@@ -247,16 +239,20 @@ void makePlots_electron_eachYear(){
 
       // h_Error : A histogram for calcalating the total error of all backgrounds
       h_Error[it_y] = (TH1D*)h_Temp[it_y]->Clone();
-      if(h_Fake[it_y]) h_Error[it_y]->Add(h_Fake[it_y]);
-      if(h_CF[it_y]) h_Error[it_y]->Add(h_CF[it_y]);
-      if(h_AllMC[it_y]) h_Error[it_y]->Add(h_AllMC[it_y]); 
+      if(IDname == "HN16"){ if(h_Fake[it_y]) h_Error[it_y]->Add(h_Fake[it_y]); }
+      if(h_MC[0][it_y]) h_Error[it_y]->Add(h_MC[0][it_y]);
+      if(h_MC[1][it_y]) h_Error[it_y]->Add(h_MC[1][it_y]);
+      if(h_Bundle[0][it_y]) h_Error[it_y]->Add(h_Bundle[0][it_y]);
+      if(h_Bundle[1][it_y]) h_Error[it_y]->Add(h_Bundle[1][it_y]);
+      if(h_Bundle[2][it_y]) h_Error[it_y]->Add(h_Bundle[2][it_y]);
 
       // Add systematic errors
       h_Error_Background1[it_y] = (TH1D*)h_Error[it_y]->Clone();  // Stat. + Syst. // Draw this first in the ratio plot
       h_Error_Background2[it_y] = (TH1D*)h_Error[it_y]->Clone();  // Stat. only
       for(int it_bin = minBinNumber; it_bin < maxBinNumber+1; it_bin++){
         binError_Stat = h_Error_Background1[it_y]->GetBinError(it_bin);
-        binError_Syst = h_Fake[it_y]->GetBinContent(it_bin)*0.3;
+        if(IDname == "HN16") binError_Syst = h_Fake[it_y]->GetBinContent(it_bin)*0.3;
+        else binError_Syst = 0.;
         binError = sqrt(binError_Stat*binError_Stat + binError_Syst*binError_Syst);
         h_Error[it_y]->SetBinError(it_bin, binError);
       }
@@ -275,18 +271,21 @@ void makePlots_electron_eachYear(){
 
       // Set Min or Max of y axis
       max_Data = h_Data[it_y]->GetBinContent(h_Data[it_y]->GetMaximumBin());
-      max_Background  = h_Error[it_y]->GetBinContent(h_Error[it_y]->GetMaximumBin());
+      max_Background = h_Error[it_y]->GetBinContent(h_Error[it_y]->GetMaximumBin());
       max_Hist = std::max(max_Data, max_Background);
-      hs->SetMinimum(0);
-      hs->SetMaximum(max_Hist*1.3);
+      hs->SetMinimum(10);
+      hs->SetMaximum(max_Hist*10);
 
       // Draw the legend
       lg = new TLegend(0.6, 0.45, 0.9, 0.85);
       lg->AddEntry(h_Error[it_y], "Stat. + Syst. Uncertainty", "f");
       lg->AddEntry(h_Data[it_y], "Data", "lep");
-      lg->AddEntry(h_AllMC[it_y], "Prompt background", "f");
-      lg->AddEntry(h_Fake[it_y], "MisId. Lepton background", "f");
-      lg->AddEntry(h_CF[it_y], "Charge flip background", "f");
+      lg->AddEntry(h_MC[0][it_y], "DY", "f");
+      if(IDname == "HN16") lg->AddEntry(h_Fake[it_y], "MisId. Lepton background", "f");
+      lg->AddEntry(h_MC[1][it_y], "t#bar{t}", "f");
+      lg->AddEntry(h_Bundle[0][it_y], "VV", "f");
+      lg->AddEntry(h_Bundle[1][it_y], "VVV", "f");
+      lg->AddEntry(h_Bundle[2][it_y], "t#bar{t}V, tW", "f");
       lg->SetBorderSize(0);
       lg->SetTextSize(0.03);
       lg->SetFillStyle(1001);
@@ -301,19 +300,19 @@ void makePlots_electron_eachYear(){
       txt.SetTextFont(42);
       txt.DrawLatex(.95,.96, luminosity.at(it_y)+" fb^{-1} (13 TeV)");
 
-      TLatex txt2;
+      /*TLatex txt2;
       txt2.SetNDC();
       txt2.SetTextSize(0.05);
       txt2.SetTextAlign(12);
       txt2.SetTextFont(62);
-      txt2.DrawLatex(.18,.88, txt_channel);
+      txt2.DrawLatex(.18,.88, txt_channel);*/
 
       TLatex txt3;
       txt3.SetNDC();
       txt3.SetTextSize(0.05);
       txt3.SetTextAlign(12);
       txt3.SetTextFont(62);
-      txt3.DrawLatex(.18,.82, txt_region);
+      txt3.DrawLatex(.18,.88, txt_region);
  
       c1->cd();
 
@@ -332,7 +331,8 @@ void makePlots_electron_eachYear(){
       for(int it_bin = minBinNumber; it_bin < maxBinNumber+1; it_bin++){
         binContent = h_Error_Background1[it_y]->GetBinContent(it_bin);
         binError_Stat = h_Error_Background1[it_y]->GetBinError(it_bin);
-        binError_Syst = h_Fake[it_y]->GetBinContent(it_bin)*0.3;
+        if(IDname == "HN16") binError_Syst = h_Fake[it_y]->GetBinContent(it_bin)*0.3;
+        else binError_Syst = 0.;
         binError  = sqrt(binError_Stat*binError_Stat + binError_Syst*binError_Syst);
         if(binContent != 0.){
           binError = binError/binContent;
@@ -352,7 +352,7 @@ void makePlots_electron_eachYear(){
       h_Error_Background1[it_y]->GetXaxis()->SetTitle(txt_variable);
       h_Error_Background1[it_y]->GetYaxis()->SetTitle("#frac{Obs.}{Pred.}");
       h_Error_Background1[it_y]->GetXaxis()->SetRange(minBinNumber, maxBinNumber);
-      h_Error_Background1[it_y]->GetYaxis()->SetRangeUser(0., 2.);
+      h_Error_Background1[it_y]->GetYaxis()->SetRangeUser(0.7, 1.3);
       h_Error_Background1[it_y]->GetXaxis()->SetLabelSize(0.12);
       h_Error_Background1[it_y]->GetYaxis()->SetLabelSize(0.08);
       h_Error_Background1[it_y]->GetXaxis()->SetTitleSize(0.16);
@@ -401,7 +401,7 @@ void makePlots_electron_eachYear(){
       //==== Save plots
       //=========================================
 
-      c1->SaveAs("./plots_SR_eachYear/"+IDname+"/"+channel+"/"+output_region+"/"+variable+"_"+year.at(it_y)+".png");
+      c1->SaveAs("./plots_SM_CR_eachYear/"+IDname+"/"+output_region+"/"+variable+"_"+year.at(it_y)+".png");
 
       delete c_up;
       delete c_down;
@@ -414,16 +414,16 @@ void makePlots_electron_eachYear(){
       delete lg2;
       delete f_Data[it_y];
       delete f_Fake[it_y];
-      delete f_CF[it_y];
       for(int it_mc=0; it_mc<MCNumber; it_mc++){
         delete f_MC[it_mc][it_y];
         delete h_MC[it_mc][it_y];
       }
       delete h_Data[it_y];
       delete h_Fake[it_y];
-      delete h_CF[it_y];
       delete h_Temp[it_y];
-      delete h_AllMC[it_y];
+      delete h_Bundle[0][it_y];
+      delete h_Bundle[1][it_y];
+      delete h_Bundle[2][it_y];
       delete h_Error[it_y];
       delete h_Error_Background1[it_y];
       delete h_Error_Background2[it_y];
