@@ -1,0 +1,12 @@
+HighPt	DYmm	Lep1_Pt	5	1	60
+HighPt	DYmm	Lep2_Pt	5	1	60
+HighPt	DYmm	MET	10	1	30
+HighPt	DYmm	ZCand_Mass	1	60	300
+HighPt	DYmm	Mass100_Lep1_Pt	5	1	60
+HighPt	DYmm	Mass100_Lep2_Pt	5	1	60
+HighPt	DYmm	Mass100_MET	10	1	30
+HighPt	DYmm	Mass100_ZCand_Mass	1	60	300
+HighPt	TTmm	Lep1_Pt	5	1	60
+HighPt	TTmm	Lep2_Pt	5	1	60
+HighPt	TTmm	MET	10	1	30
+HighPt	TTmm	ZCand_Mass	1	60	300

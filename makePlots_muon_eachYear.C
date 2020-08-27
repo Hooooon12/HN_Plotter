@@ -3,10 +3,10 @@
 // How to run this code?
 // root -b -l -q makePlots_muon_eachYear.C
 
-TString workdir = "/data6/Users/helee/working_HN_Plotter/";
+TString workdir = "/data6/Users/jihkim/HN_Plotter/";
 TString SKFlatVersion = "Run2Legacy_v4";
 TString skim = "SkimTree_Dilepton";
-TString analyzer = "HNtypeI_SR";
+TString analyzer = "Signal";
 TString file_path = "";
 vector<TString> year = {"2016", "2017", "2018"};
 vector<TString> luminosity = {"35.9", "41.5", "59.7"};
@@ -23,7 +23,7 @@ void FixOverflows(TH1D *hist, int maxBin, int maxBin_total);
 void makePlots_muon_eachYear(){
 
   string histline;
-  ifstream in("histList_emu.txt");
+  ifstream in("JH_histList_emu.txt");
   // Line loop
   while(getline(in, histline)){
     std::istringstream is(histline);
@@ -112,7 +112,7 @@ void makePlots_muon_eachYear(){
       //=========================================
       //==== Set input ROOT files
       //=========================================
-
+ 
       // DATA, Fake
       f_Data[it_y]   = new TFile(workdir+file_path+"DATA/"+analyzer+"_"+skim+"_"+PDname+".root");
       f_Fake[it_y]   = new TFile(workdir+file_path+"RunFake__/DATA/"+analyzer+"_"+skim+"_"+PDname+".root");

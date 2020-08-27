@@ -1,0 +1,8 @@
+POGTight	ZZ/mmmm	Lep1_Pt	5	1	30
+POGTight	ZZ/mmmm	Lep2_Pt	5	1	30
+POGTight	ZZ/mmmm	Lep3_Pt	5	1	20
+POGTight	ZZ/mmmm	Lep4_Pt	5	1	20
+POGTight	ZZ/mmmm	MET	10	1	10
+POGTight	ZZ/mmmm	MET2ST	5	1	5
+POGTight	ZZ/mmmm	ZCand1_Mass	1	20	60
+POGTight	ZZ/mmmm	ZCand2_Mass	1	20	60

@@ -1,0 +1,10 @@
+HighPt	WZ	Lep1_Pt	5	1	60
+HighPt	WZ	Lep2_Pt	5	1	60
+HighPt	WZ	Lep3_Pt	5	1	60
+HighPt	WZ	MET	10	1	30
+HighPt	WZ	ZCand_Mass	1	60	300
+POGTight	WZ	Lep1_Pt	5	1	60
+POGTight	WZ	Lep2_Pt	5	1	60
+POGTight	WZ	Lep3_Pt	5	1	60
+POGTight	WZ	MET	10	1	30
+POGTight	WZ	ZCand_Mass	1	60	300

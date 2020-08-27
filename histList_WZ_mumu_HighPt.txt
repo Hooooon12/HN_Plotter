@@ -1,0 +1,7 @@
+HighPt	WZ/mmm	Lep1_Pt	5	1	30
+HighPt	WZ/mmm	Lep2_Pt	5	1	30
+HighPt	WZ/mmm	Lep3_Pt	5	1	20
+HighPt	WZ/mmm	MET	10	1	30
+HighPt	WZ/mmm	MET2ST	5	1	10
+HighPt	WZ/mmm	Mt	10	1	30
+HighPt	WZ/mmm	ZCand_Mass	1	20	60

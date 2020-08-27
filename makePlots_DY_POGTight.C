@@ -3,13 +3,13 @@
 // How to run this code?
 // root -b -l -q makePlots_DY_eachYear.C
 
-TString workdir = "/data6/Users/jihkim/HN_Plotter/";
+TString workdir = "/data6/Users/jihkim/SKFlatOutput/";
 TString SKFlatVersion = "Run2Legacy_v4";
 TString skim = "SkimTree_Dilepton";
-TString analyzer = "Signal";
+TString analyzer = "Control";
 TString file_path = "";
-vector<TString> year = {"2016", "2017", "2018"};
-vector<TString> luminosity = {"35.9", "41.5", "59.7"};
+vector<TString> year = {"2016"};
+vector<TString> luminosity = {"35.9"};
 vector<TString> ZGname = {"ZGTo2LG", "ZGToLLG_01J", "ZGToLLG_01J"};
 vector<TString> WGname = {"WGToLNuG", "WGToLNuG_01J", "WGToLNuG_01J"};
 
@@ -20,10 +20,11 @@ double max_Data = 0., max_Background = 0., max_Hist = 0.;
 
 void FixOverflows(TH1D *hist, int maxBin, int maxBin_total);
 
-void makePlots_DY_eachYear(){
+void makePlots_DY_POGTight(){
 
   string histline;
-  ifstream in("histList_DY.txt");
+  //ifstream in("histList_DY.txt"); //JH
+  ifstream in("histList_DY_POGTight.txt");
   // Line loop
   while(getline(in, histline)){
     std::istringstream is(histline);
@@ -81,7 +82,7 @@ void makePlots_DY_eachYear(){
 
       // DATA, Fake
       f_Data[it_y]   = new TFile(workdir+file_path+"DATA/"+analyzer+"_"+skim+"_"+PDname+".root");
-      f_Fake[it_y]   = new TFile(workdir+file_path+"RunFake__/DATA/"+analyzer+"_"+skim+"_"+PDname+".root");
+      //f_Fake[it_y]   = new TFile(workdir+file_path+"RunFake__/DATA/"+analyzer+"_"+skim+"_"+PDname+".root");
       // MC : DY, TTLL
       f_MC[0][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim+"_DYJets.root");
       f_MC[1][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim+"_TTLL_powheg.root");
@@ -125,20 +126,20 @@ void makePlots_DY_eachYear(){
 
       // DATA, Fake
       h_Data[it_y]  = (TH1D*)f_Data[it_y]->Get(region+"/"+variable+"_"+IDname);
-      h_Fake[it_y]  = (TH1D*)f_Fake[it_y]->Get(region+"/"+variable+"_"+"HN16");
+      //h_Fake[it_y]  = (TH1D*)f_Fake[it_y]->Get(region+"/"+variable+"_"+"HN16");
       // MC
       for(int it_mc=0; it_mc<MCNumber; it_mc++){
         h_MC[it_mc][it_y] = (TH1D*)f_MC[it_mc][it_y]->Get(region+"/"+variable+"_"+IDname);
       }
 
       h_Data[it_y]->SetDirectory(0);
-      h_Fake[it_y]->SetDirectory(0);
+      //h_Fake[it_y]->SetDirectory(0);
       for(int it_mc=0; it_mc<MCNumber; it_mc++){
         if(h_MC[it_mc][it_y]) h_MC[it_mc][it_y]->SetDirectory(0);
       }
 
       f_Data[it_y]->Close();
-      f_Fake[it_y]->Close();
+      //f_Fake[it_y]->Close();
       for(int it_mc=0; it_mc<MCNumber; it_mc++){
         f_MC[it_mc][it_y]->Close();
       }
@@ -185,7 +186,7 @@ void makePlots_DY_eachYear(){
 
       // Rebin
       h_Data[it_y]->Rebin(rebin);
-      h_Fake[it_y]->Rebin(rebin);
+      //h_Fake[it_y]->Rebin(rebin);
       h_MC[0][it_y]->Rebin(rebin);
       h_MC[1][it_y]->Rebin(rebin);
       h_Bundle[0][it_y]->Rebin(rebin);
@@ -201,7 +202,7 @@ void makePlots_DY_eachYear(){
 
       // Fix overflows
       FixOverflows(h_Data[it_y], maxBinNumber, maxBinNumber_total);
-      FixOverflows(h_Fake[it_y], maxBinNumber, maxBinNumber_total);
+      //FixOverflows(h_Fake[it_y], maxBinNumber, maxBinNumber_total);
       FixOverflows(h_Bundle[0][it_y], maxBinNumber, maxBinNumber_total);
       FixOverflows(h_Bundle[1][it_y], maxBinNumber, maxBinNumber_total);
       FixOverflows(h_Bundle[2][it_y], maxBinNumber, maxBinNumber_total);
@@ -401,6 +402,7 @@ void makePlots_DY_eachYear(){
       //==== Save plots
       //=========================================
 
+      gSystem->Exec("mkdir -p plots_SM_CR_eachYear/"+IDname+"/"+output_region);      
       c1->SaveAs("./plots_SM_CR_eachYear/"+IDname+"/"+output_region+"/"+variable+"_"+year.at(it_y)+".png");
 
       delete c_up;
@@ -413,13 +415,13 @@ void makePlots_DY_eachYear(){
       delete lg;
       delete lg2;
       delete f_Data[it_y];
-      delete f_Fake[it_y];
+      //delete f_Fake[it_y];
       for(int it_mc=0; it_mc<MCNumber; it_mc++){
         delete f_MC[it_mc][it_y];
         delete h_MC[it_mc][it_y];
       }
       delete h_Data[it_y];
-      delete h_Fake[it_y];
+      //delete h_Fake[it_y];
       delete h_Temp[it_y];
       delete h_Bundle[0][it_y];
       delete h_Bundle[1][it_y];
