@@ -1,8 +1,0 @@
-Run2	dimu/DY	Lep1_Pt			5		1		60
-Run2	dimu/DY	Lep2_Pt			5		1		60
-Run2	dimu/DY	MET					10	1		30
-Run2	dimu/DY	ZCand_Mass	1		60	300
-Run2	diel/DY	Lep1_Pt			5		1		60
-Run2	diel/DY	Lep2_Pt			5		1		60
-Run2	diel/DY	MET					10	1		30
-Run2	diel/DY	ZCand_Mass	1		60	300

@@ -1,4 +1,0 @@
-POGTight	DYmm	Lep1_Pt	5	1	60
-POGTight	DYmm	Lep2_Pt	5	1	60
-POGTight	DYmm	MET	10	1	30
-POGTight	DYmm	ZCand_Mass	1	60	300
