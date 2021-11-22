@@ -1,0 +1,28 @@
+Muon	HN	Muon_Loose_PtCone	HN	5	1	40
+Muon	HN	Muon_Tight_PtCone	HN	5	1	40
+Muon	HN	Muon_Loose_Eta	HN	5	2	11
+Muon	HN	Muon_Tight_Eta	HN	5	2	11
+Muon	Z	DiLep_Mass_Mu3	HN	1	71	110
+Muon	Z	DiLep_Mass_Mu8	HN	1	71	110
+Muon	Z	DiLep_Mass_Mu17	HN	1	71	110
+Muon	W	MT_Mu3	HN	1	1	200
+Muon	W	MT_Mu8	HN	1	1	200
+Muon	W	MT_Mu17	HN	1	1	200
+Muon	Z	DiLep_Mass_Mu3	HN	1	71	110	Norm
+Muon	Z	DiLep_Mass_Mu8	HN	1	71	110	Norm
+Muon	Z	DiLep_Mass_Mu17	HN	1	71	110	Norm
+Muon	W	MT_Mu3	HN	1	1	200	Norm
+Muon	W	MT_Mu8	HN	1	1	200	Norm
+Muon	W	MT_Mu17	HN	1	1	200	Norm
+#Electron	HN	Electron_Loose_PtCone	HN	5	1	40
+#Electron	HN	Electron_Tight_PtCone	HN	5	1	40
+#Electron	HN	Electron_Loose_Eta	HN	5	2	11
+#Electron	HN	Electron_Tight_Eta	HN	5	2	11
+#Electron	Z	DiLep_Mass_Ele8	HN	1	71	110
+#Electron	Z	DiLep_Mass_Ele12	HN	1	71	110
+#Electron	Z	DiLep_Mass_Ele17	HN	1	71	110
+#Electron	Z	DiLep_Mass_Ele23	HN	1	71	110
+#Electron	W	MT_Ele8	HN	1	1	200
+#Electron	W	MT_Ele12	HN	1	1	200
+#Electron	W	MT_Ele17	HN	1	1	200
+#Electron	W	MT_Ele23	HN	1	1	200

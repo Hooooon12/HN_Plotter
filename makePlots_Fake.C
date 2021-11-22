@@ -1,67 +1,65 @@
 #include <iostream>
 
 // How to run this code?
-// root -b -l -q makePlots_HNtypeI_WZ.C
+// root -b -l -q makePlots_Fake.C
 
-TString workdir = "/data6/Users/jihkim/HNtypeIOutput/";
+TString workdir = "/data6/Users/jihkim/SKFlatOutput/";
 TString SKFlatVersion = "Run2Legacy_v4";
-TString skim = "SkimTree_Dilepton";
-TString analyzer = "HNtypeI_VV_CR";
+//TString skim = "SkimTree_Dilepton";
+TString flag = "FR__Norm__";
+TString analyzer = "Fake";
 TString file_path = "";
 //vector<TString> year = {"2016", "2017", "2018"};
-vector<TString> year = {"2017"};
+vector<TString> year = {"2016"};
 //vector<TString> luminosity = {"35.9", "41.5", "59.7"};
-vector<TString> luminosity = {"41.5"};
-//vector<TString> ZGname = {"ZGTo2LG", "ZGToLLG_01J", "ZGToLLG_01J"};
-vector<TString> ZGname = {"ZGToLLG_01J"};
-//vector<TString> WGname = {"WGToLNuG", "WGToLNuG_01J", "WGToLNuG_01J"};
-vector<TString> WGname = {"WGToLNuG_01J"};
+vector<TString> luminosity = {"35.9"};
+vector<TString> ZGname = {"ZGTo2LG", "ZGToLLG_01J", "ZGToLLG_01J"};
+vector<TString> WGname = {"WGToLNuG", "WGToLNuG_01J", "WGToLNuG_01J"};
 
-const int MCNumber = 21; //JH
+const int MCNumber = 12; //
 int maxBinNumber_total = 0, maxBinNumber_temp = 0;
 double minRange = 0., maxRange = 0., binContent = 0., binError = 0., binError_Stat = 0., binError_Syst = 0.;
 double max_Data = 0., max_Background = 0., max_Hist = 0.;
 
 void FixOverflows(TH1D *hist, int maxBin, int maxBin_total);
 
-void makePlots_HNtypeI_WZ(){
+void makePlots_Fake(){
 
   string histline;
-  ifstream in("histList_HNtypeI_WZ.txt");
+  ifstream in("histList_Fake.txt");
   // Line loop
   while(getline(in, histline)){
     std::istringstream is(histline);
     TString this_line = histline;
     if(this_line.Contains("#")||this_line=="") continue;
-    TString IDname, region, variable, txt_region, output_region, txt_variable, PDname;
+    TString channel, region, variable, IDname, isNorm, txt_region, output_region, txt_variable, PDname;
     int rebin, minBinNumber, maxBinNumber;
-    is >> IDname;
+    is >> channel;
     is >> region;
     is >> variable;
+    is >> IDname;
     is >> rebin;
     is >> minBinNumber;
     is >> maxBinNumber;
+    is >> isNorm;
 
     // txt_region, output_region
-    if(region.Contains("mmm")){
-      txt_region = "WZ CR(#mu#mu#mu)";
+    if(channel.Contains("Muon")){
       PDname = "DoubleMuon";
+      if(variable.Contains("Loose")) txt_region = "loose muon";
+      else if(variable.Contains("Tight")) txt_region = "tight muon";
+      else if(variable.Contains("Mu3")) txt_region = "HLT_Mu3 "+isNorm;
+      else if(variable.Contains("Mu8")) txt_region = "HLT_Mu8 "+isNorm;
+      else if(variable.Contains("Mu17")) txt_region = "HLT_Mu17 "+isNorm;
     }
-    else if(region.Contains("mme")){
-      txt_region = "WZ CR(#mu#mue)";
+    else if(channel.Contains("Electron")){
       PDname = "DoubleMuon";
-    }
-    else if(region.Contains("mee")){
-      txt_region = "WZ CR(#muee)";
-      PDname = "DoubleEG";
-    }
-    else if(region.Contains("eee")){
-      txt_region = "WZ CR(eee)";
-      PDname = "DoubleEG";
-    }
-    else{
-      txt_region = "WZ CR(lll)";
-      PDname = "";
+      if(variable.Contains("Loose")) txt_region = "loose electron";
+      else if(variable.Contains("Tight")) txt_region = "tight electron";
+      else if(variable.Contains("Ele8")) txt_region = "HLT_Ele8";
+      else if(variable.Contains("Ele12")) txt_region = "HLT_Ele12";
+      else if(variable.Contains("Ele17")) txt_region = "HLT_Ele17";
+      else if(variable.Contains("Ele23")) txt_region = "HLT_Ele23";
     }
     output_region = region;
 
@@ -69,11 +67,13 @@ void makePlots_HNtypeI_WZ(){
     if(variable.Contains("Lep1_Pt")) txt_variable = "p_{T}(l_{1}) (GeV)";
     if(variable.Contains("Lep2_Pt")) txt_variable = "p_{T}(l_{2}) (GeV)";
     if(variable.Contains("Lep3_Pt")) txt_variable = "p_{T}(l_{3}) (GeV)";
-    if(variable.Contains("Mt")) txt_variable = "M_{T}(l,#slash{E}_{T}^{miss}) (GeV)";
+    if(variable.Contains("MT")) txt_variable = "M_{T}(l,#slash{E}_{T}^{miss}) (GeV)";
     if(variable.Contains("MET")) txt_variable = "#slash{E}_{T}^{miss} (GeV)";
     if(variable.Contains("MET2ST")) txt_variable = "(#slash{E}_{T}^{miss})^{2}/S_{T} (GeV)";
-    if(variable.Contains("ZCand")) txt_variable = "m(ll) (GeV)";
+    if(variable.Contains("DiLep")) txt_variable = "m(ll) (GeV)";
     if(variable.Contains("TriLep")) txt_variable = "m(lll) (GeV)";
+    if(variable.Contains("PtCone")) txt_variable = "p_{T}^{cone} (GeV)";
+    if(variable.Contains("Eta")) txt_variable = "#eta";
 
     // Declare variables needed for making plots 
     TFile *f_Data[3], *f_Fake[3], *f_MC[MCNumber][3];
@@ -85,10 +85,10 @@ void makePlots_HNtypeI_WZ(){
 
     // Year loop
     for(int it_y=0; it_y<year.size(); it_y++){
-      file_path = SKFlatVersion+"/"+analyzer+"/"+year.at(it_y)+"/";
+      file_path = SKFlatVersion+"/"+analyzer+"/"+year.at(it_y)+"/FR__Norm__/";
 
       // PDname in 2018 : DoubleEG -> EGamma
-      if(region.Contains("ee")){
+      if(channel.Contains("Electron")){
         if(it_y == 2) PDname = "EGamma";
         else PDname = "DoubleEG";
       }
@@ -98,56 +98,50 @@ void makePlots_HNtypeI_WZ(){
       //=========================================
 
       // DATA, Fake
-      f_Data[it_y]   = new TFile(workdir+file_path+"DATA/"+analyzer+"_"+skim+"_"+PDname+".root");
-      f_Fake[it_y]   = new TFile(workdir+file_path+"RunFake__/DATA/"+analyzer+"_"+skim+"_"+PDname+".root"); //JH
-      //MC : VV
-      f_MC[0][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim+"_WZTo3LNu_powheg.root"); //JH
-      f_MC[1][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim+"_ZZTo4L_powheg.root");
-      f_MC[2][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim+"_"+ZGname.at(it_y)+".root");
-      //f_MC[3][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim+"_"+WGname.at(it_y)+".root"); //JH : WG has no entry in WZ CR
-      // MC : VVV
-      f_MC[3][it_y]  = new TFile(workdir+file_path+analyzer+"_WWW.root");
-      f_MC[4][it_y]  = new TFile(workdir+file_path+analyzer+"_WWZ.root");
-      f_MC[5][it_y]  = new TFile(workdir+file_path+analyzer+"_WZZ.root");
-      f_MC[6][it_y]  = new TFile(workdir+file_path+analyzer+"_ZZZ.root"); //JH
+      f_Data[it_y]   = new TFile(workdir+file_path+"DATA/"+analyzer+"_"+PDname+".root");
+      //f_Fake[it_y]   = new TFile(workdir+file_path+"RunFake__/DATA/"+analyzer+"_"+skim+"_"+PDname+".root");
+      // MC : WJets
+      f_MC[0][it_y] = new TFile(workdir+file_path+analyzer+"_WJets_MG.root");
+      // MC : DYJets
+      f_MC[1][it_y] = new TFile(workdir+file_path+analyzer+"_DYJets.root");
       // MC : Top
-      f_MC[7][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim+"_TTG.root"); //JH
-      f_MC[8][it_y]  = new TFile(workdir+file_path+analyzer+"_TG.root"); //JH
-      f_MC[9][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim+"_ttWToLNu.root");
-      f_MC[10][it_y] = new TFile(workdir+file_path+analyzer+"_"+skim+"_ttZToLLNuNu.root");
-      f_MC[11][it_y] = new TFile(workdir+file_path+analyzer+"_"+skim+"_ttHToNonbb.root");
-      // MC : Higgs
-      f_MC[12][it_y] = new TFile(workdir+file_path+analyzer+"_ggHToZZTo4L.root");
-      f_MC[13][it_y] = new TFile(workdir+file_path+analyzer+"_VBF_HToZZTo4L.root");
-      f_MC[14][it_y] = new TFile(workdir+file_path+analyzer+"_VHToNonbb.root");
-      // MC : ggZZTo4L
-      f_MC[15][it_y] = new TFile(workdir+file_path+analyzer+"_"+skim+"_ggZZTo2e2mu.root");
-      f_MC[16][it_y] = new TFile(workdir+file_path+analyzer+"_"+skim+"_ggZZTo2e2tau.root");
-      f_MC[17][it_y] = new TFile(workdir+file_path+analyzer+"_"+skim+"_ggZZTo2mu2tau.root");
-      f_MC[18][it_y] = new TFile(workdir+file_path+analyzer+"_"+skim+"_ggZZTo4e.root");
-      f_MC[19][it_y] = new TFile(workdir+file_path+analyzer+"_"+skim+"_ggZZTo4mu.root");
-      f_MC[20][it_y] = new TFile(workdir+file_path+analyzer+"_"+skim+"_ggZZTo4tau.root");
+      f_MC[2][it_y]  = new TFile(workdir+file_path+analyzer+"_SingleTop_tch_top_Incl.root"); //JH
+      f_MC[3][it_y]  = new TFile(workdir+file_path+analyzer+"_SingleTop_tch_antitop_Incl.root"); //JH
+      f_MC[4][it_y]  = new TFile(workdir+file_path+analyzer+"_TTLJ_powheg.root");
+      f_MC[5][it_y] = new TFile(workdir+file_path+analyzer+"_TTLL_powheg.root");
+      //MC : VV
+      f_MC[6][it_y]  = new TFile(workdir+file_path+analyzer+"_WZTo3LNu_powheg.root");
+      f_MC[7][it_y]  = new TFile(workdir+file_path+analyzer+"_ZZTo4L_powheg.root");
+      f_MC[8][it_y]  = new TFile(workdir+file_path+analyzer+"_"+ZGname.at(it_y)+".root");
+      f_MC[9][it_y]  = new TFile(workdir+file_path+analyzer+"_WWToLNuQQ_powheg.root");
+      f_MC[10][it_y]  = new TFile(workdir+file_path+analyzer+"_WWTo2L2Nu_powheg.root");
+      f_MC[11][it_y]  = new TFile(workdir+file_path+analyzer+"_"+WGname.at(it_y)+".root");
 
       //=========================================
       //==== Get histograms
       //=========================================
 
+      TString region_tmp = channel+"/"+region;
+      if(region=="Z"||region=="W") region_tmp = region+"_"+channel;
+
       // DATA, Fake
-      h_Data[it_y]  = (TH1D*)f_Data[it_y]->Get(region+"_"+variable+"_"+IDname);
-      h_Fake[it_y]  = (TH1D*)f_Fake[it_y]->Get(region+"_"+variable+"_"+IDname);
+      h_Data[it_y]  = (TH1D*)f_Data[it_y]->Get(region_tmp+"/"+variable+"_"+IDname);
+      //h_Data[it_y]  = (TH1D*)f_Data[it_y]->Get(channel+"/"+region+"/"+variable+"_"+IDname);
+      //h_Fake[it_y]  = (TH1D*)f_Fake[it_y]->Get(region+"/"+variable+"_"+IDname);
       // MC
       for(int it_mc=0; it_mc<MCNumber; it_mc++){
-        h_MC[it_mc][it_y] = (TH1D*)f_MC[it_mc][it_y]->Get(region+"_"+variable+"_"+IDname);
+        h_MC[it_mc][it_y] = (TH1D*)f_MC[it_mc][it_y]->Get(region_tmp+"/"+variable+"_"+IDname);
+        //h_MC[it_mc][it_y] = (TH1D*)f_MC[it_mc][it_y]->Get(channel+"/"+region+"/"+variable+"_"+IDname);
       }
 
       h_Data[it_y]->SetDirectory(0);
-      h_Fake[it_y]->SetDirectory(0);
+      //h_Fake[it_y]->SetDirectory(0);
       for(int it_mc=0; it_mc<MCNumber; it_mc++){
         if(h_MC[it_mc][it_y]) h_MC[it_mc][it_y]->SetDirectory(0);
       }
 
       f_Data[it_y]->Close();
-      f_Fake[it_y]->Close();
+      //f_Fake[it_y]->Close();
       for(int it_mc=0; it_mc<MCNumber; it_mc++){
         f_MC[it_mc][it_y]->Close();
       }
@@ -174,34 +168,27 @@ void makePlots_HNtypeI_WZ(){
       c_up->SetBottomMargin(0.017);
       c_up->SetLeftMargin(0.14);
       c_up->SetRightMargin(0.04);
-      //c_up->SetLogy(); //JH
+      if(!( region=="Z"||region=="W" )) c_up->SetLogy(); //JH
       c_up->Draw();
       c_up->cd();
 
       // Merge backgrounds
-      h_Bundle[0][it_y] = (TH1D*)h_Temp[it_y]->Clone(); //JH : VVV
-      h_Bundle[1][it_y] = (TH1D*)h_Temp[it_y]->Clone(); //JH : Top
-      h_Bundle[2][it_y] = (TH1D*)h_Temp[it_y]->Clone(); //JH : Higgs, ggZZ
-      for(int it_mc=3; it_mc<7; it_mc++){
+      h_Bundle[0][it_y] = (TH1D*)h_Temp[it_y]->Clone(); // top
+      h_Bundle[1][it_y] = (TH1D*)h_Temp[it_y]->Clone(); // VV
+      for(int it_mc=2; it_mc<=5; it_mc++){
         if(h_MC[it_mc][it_y]) h_Bundle[0][it_y]->Add(h_MC[it_mc][it_y]);
       }
-      for(int it_mc=7; it_mc<12; it_mc++){
+      for(int it_mc=6; it_mc<=11; it_mc++){
         if(h_MC[it_mc][it_y]) h_Bundle[1][it_y]->Add(h_MC[it_mc][it_y]);
-      }
-      for(int it_mc=12; it_mc<MCNumber; it_mc++){
-        if(h_MC[it_mc][it_y]) h_Bundle[2][it_y]->Add(h_MC[it_mc][it_y]);
       }
 
       // Rebin
       h_Data[it_y]->Rebin(rebin);
-      h_Fake[it_y]->Rebin(rebin);
+      //h_Fake[it_y]->Rebin(rebin);
       h_MC[0][it_y]->Rebin(rebin);
       h_MC[1][it_y]->Rebin(rebin);
-      h_MC[2][it_y]->Rebin(rebin);
-      //h_MC[3][it_y]->Rebin(rebin); //JH : no WG event in WZ CR
       h_Bundle[0][it_y]->Rebin(rebin);
       h_Bundle[1][it_y]->Rebin(rebin);
-      h_Bundle[2][it_y]->Rebin(rebin);
       h_Temp[it_y]->Rebin(rebin);
 
       maxBinNumber_total = h_Data[it_y]->GetNbinsX();  // This is needed for adding overflow bins
@@ -212,66 +199,64 @@ void makePlots_HNtypeI_WZ(){
 
       // Fix overflows
       FixOverflows(h_Data[it_y], maxBinNumber, maxBinNumber_total);
-      FixOverflows(h_Fake[it_y], maxBinNumber, maxBinNumber_total);
+      //FixOverflows(h_Fake[it_y], maxBinNumber, maxBinNumber_total);
       FixOverflows(h_MC[0][it_y], maxBinNumber, maxBinNumber_total);
       FixOverflows(h_MC[1][it_y], maxBinNumber, maxBinNumber_total);
-      FixOverflows(h_MC[2][it_y], maxBinNumber, maxBinNumber_total); //JH
       FixOverflows(h_Bundle[0][it_y], maxBinNumber, maxBinNumber_total);
       FixOverflows(h_Bundle[1][it_y], maxBinNumber, maxBinNumber_total);
-      FixOverflows(h_Bundle[2][it_y], maxBinNumber, maxBinNumber_total); //JH
 
       // Stack & Draw MC
       hs = new THStack("hs", "");
-      h_MC[0][it_y]->SetLineWidth(0);
-      h_MC[0][it_y]->SetFillColor(kGreen);
-      hs->Add(h_MC[0][it_y]);
-      h_MC[1][it_y]->SetLineWidth(0);
-      h_MC[1][it_y]->SetFillColor(kRed-1);
-      hs->Add(h_MC[1][it_y]);
-      h_MC[2][it_y]->SetLineWidth(0);
-      h_MC[2][it_y]->SetFillColor(kMagenta);
-      hs->Add(h_MC[2][it_y]);
-      //h_MC[3][it_y]->SetLineWidth(0);
-      //h_MC[3][it_y]->SetFillColor(kYellow);
-      //hs->Add(h_MC[3][it_y]); //JH
-      h_Bundle[2][it_y]->SetLineWidth(0);
-      h_Bundle[2][it_y]->SetFillColor(kSpring+10);
-      hs->Add(h_Bundle[2][it_y]);
       h_Bundle[1][it_y]->SetLineWidth(0);
-      h_Bundle[1][it_y]->SetFillColor(kOrange);
+      h_Bundle[1][it_y]->SetFillColor(kGreen+1);
       hs->Add(h_Bundle[1][it_y]);
       h_Bundle[0][it_y]->SetLineWidth(0);
-      h_Bundle[0][it_y]->SetFillColor(kGreen+1);
+      h_Bundle[0][it_y]->SetFillColor(kRed);
       hs->Add(h_Bundle[0][it_y]);
-      h_Fake[it_y]->SetLineWidth(0);
-      h_Fake[it_y]->SetFillColor(kAzure+8);
-      hs->Add(h_Fake[it_y]);
+      double scale = 1.;
+      //if(isNorm=="Norm"&&variable.Contains("Mu3")) scale = 0.6798656507922819;
+      //else if(isNorm=="Norm"&&variable.Contains("Mu8")) scale = 1.261913344446241;
+      //else if(isNorm=="Norm"&&variable.Contains("Mu17")) scale = 0.93364342777285; // JH : HNLooseV3
+      if(isNorm=="Norm"&&variable.Contains("Mu3")) scale = 0.68299395;
+      else if(isNorm=="Norm"&&variable.Contains("Mu8")) scale = 1.2583334;
+      else if(isNorm=="Norm"&&variable.Contains("Mu17")) scale = 0.93185908; // JH : HNLooseV1
+      h_MC[1][it_y]->SetLineWidth(0);
+      h_MC[1][it_y]->SetFillColor(kYellow);
+      h_MC[1][it_y]->Scale(scale);
+      hs->Add(h_MC[1][it_y]);
+      h_MC[0][it_y]->SetLineWidth(0);
+      h_MC[0][it_y]->SetFillColor(kSpring);
+      h_MC[0][it_y]->Scale(scale);
+      hs->Add(h_MC[0][it_y]);
+      //h_Fake[it_y]->SetLineWidth(0);
+      //h_Fake[it_y]->SetFillColor(kAzure+8);
+      //hs->Add(h_Fake[it_y]);
       hs->Draw("hist");
       hs->SetTitle("");
       hs->GetXaxis()->SetLabelSize(0.);
-      hs->GetYaxis()->SetLabelSize(0.045);
-      hs->GetYaxis()->SetTitle("Events / "+TString::Itoa(rebin, 10)+" GeV");
+      //hs->GetYaxis()->SetLabelSize(0.045);
+      hs->GetYaxis()->SetLabelSize(0.04);
+      if(!( variable.Contains("Eta") )) hs->GetYaxis()->SetTitle("Events / "+TString::Itoa(rebin, 10)+" GeV");
+      else hs->GetYaxis()->SetTitle("Events");
+      //hs->GetYaxis()->SetTitle("Events / 5 GeV");
       hs->GetYaxis()->SetTitleSize(0.075);
       hs->GetYaxis()->SetTitleOffset(0.8);
       hs->GetXaxis()->SetRange(minBinNumber, maxBinNumber);
 
       // h_Error : A histogram for calcalating the total error of all backgrounds
       h_Error[it_y] = (TH1D*)h_Temp[it_y]->Clone();
-      if(h_Fake[it_y]) h_Error[it_y]->Add(h_Fake[it_y]);
+      //if(h_Fake[it_y]) h_Error[it_y]->Add(h_Fake[it_y]);
       if(h_MC[0][it_y]) h_Error[it_y]->Add(h_MC[0][it_y]);
       if(h_MC[1][it_y]) h_Error[it_y]->Add(h_MC[1][it_y]);
-      if(h_MC[2][it_y]) h_Error[it_y]->Add(h_MC[2][it_y]);
-      //if(h_MC[3][it_y]) h_Error[it_y]->Add(h_MC[3][it_y]); //JH
       if(h_Bundle[0][it_y]) h_Error[it_y]->Add(h_Bundle[0][it_y]);
       if(h_Bundle[1][it_y]) h_Error[it_y]->Add(h_Bundle[1][it_y]);
-      if(h_Bundle[2][it_y]) h_Error[it_y]->Add(h_Bundle[2][it_y]);
 
       // Add systematic errors
       h_Error_Background1[it_y] = (TH1D*)h_Error[it_y]->Clone();  // Stat. + Syst. // Draw this first in the ratio plot
       h_Error_Background2[it_y] = (TH1D*)h_Error[it_y]->Clone();  // Stat. only
       for(int it_bin = minBinNumber; it_bin < maxBinNumber+1; it_bin++){
         binError_Stat = h_Error_Background1[it_y]->GetBinError(it_bin);
-        binError_Syst = h_Fake[it_y]->GetBinContent(it_bin)*0.3;
+        //binError_Syst = h_Fake[it_y]->GetBinContent(it_bin)*0.3;
         binError = sqrt(binError_Stat*binError_Stat + binError_Syst*binError_Syst);
         h_Error[it_y]->SetBinError(it_bin, binError);
       }
@@ -292,22 +277,25 @@ void makePlots_HNtypeI_WZ(){
       max_Data = h_Data[it_y]->GetBinContent(h_Data[it_y]->GetMaximumBin());
       max_Background = h_Error[it_y]->GetBinContent(h_Error[it_y]->GetMaximumBin());
       max_Hist = std::max(max_Data, max_Background);
-      hs->SetMinimum(0);
-      //hs->SetMaximum(max_Hist*10); //JH : use this when using SetLogy
-      hs->SetMaximum(max_Hist+100); //JH
+      if(!( region=="Z"||region=="W" )){
+        hs->SetMinimum(0.1);
+        hs->SetMaximum(max_Hist*10000); //JH : use this when using SetLogy
+      }
+      else{
+        hs->SetMinimum(0);
+        hs->SetMaximum(max_Hist+100); //JH
+      }
 
       // Draw the legend
-      lg = new TLegend(0.6, 0.45, 0.9, 0.85);
-      lg->AddEntry(h_Error[it_y], "Stat. + Syst. Uncertainty", "f");
+      lg = new TLegend(0.65, 0.55, 0.8, 0.9);
+      //lg->AddEntry(h_Error[it_y], "Stat. + Syst. Uncertainty", "f");
+      lg->AddEntry(h_Error[it_y], "Stat. Uncertainty", "f"); // I didn't add systematics yet
       lg->AddEntry(h_Data[it_y], "Data", "lep");
-      lg->AddEntry(h_Fake[it_y], "MisId. Lepton background", "f");
-      lg->AddEntry(h_Bundle[0][it_y], "VVV", "f");
-      lg->AddEntry(h_Bundle[1][it_y], "top", "f");
-      lg->AddEntry(h_Bundle[2][it_y], "higgs, ggZZ", "f");
-      //lg->AddEntry(h_MC[3][it_y], "W#gamma", "f"); //JH
-      lg->AddEntry(h_MC[2][it_y], "Z#gamma", "f");
-      lg->AddEntry(h_MC[1][it_y], "ZZ", "f");
-      lg->AddEntry(h_MC[0][it_y], "WZ", "f");
+      //lg->AddEntry(h_Fake[it_y], "MisId. Lepton background", "f");
+      lg->AddEntry(h_MC[0][it_y], "WJets", "f");
+      lg->AddEntry(h_MC[1][it_y], "DY", "f");
+      lg->AddEntry(h_Bundle[0][it_y], "top", "f");
+      lg->AddEntry(h_Bundle[1][it_y], "VV", "f");
       lg->SetBorderSize(0);
       lg->SetTextSize(0.03);
       lg->SetFillStyle(1001);
@@ -353,7 +341,7 @@ void makePlots_HNtypeI_WZ(){
       for(int it_bin = minBinNumber; it_bin < maxBinNumber+1; it_bin++){
         binContent = h_Error_Background1[it_y]->GetBinContent(it_bin);
         binError_Stat = h_Error_Background1[it_y]->GetBinError(it_bin);
-        binError_Syst = h_Fake[it_y]->GetBinContent(it_bin)*0.3;
+        //binError_Syst = h_Fake[it_y]->GetBinContent(it_bin)*0.3;
         binError  = sqrt(binError_Stat*binError_Stat + binError_Syst*binError_Syst);
         if(binContent != 0.){
           binError = binError/binContent;
@@ -374,7 +362,11 @@ void makePlots_HNtypeI_WZ(){
       h_Error_Background1[it_y]->GetYaxis()->SetTitle("#frac{Obs.}{Pred.}");
       h_Error_Background1[it_y]->GetXaxis()->SetRange(minBinNumber, maxBinNumber);
       //h_Error_Background1[it_y]->GetYaxis()->SetRangeUser(0.7, 1.3); //JH
-      h_Error_Background1[it_y]->GetYaxis()->SetRangeUser(0, 2);
+      if(!( region=="Z"||region=="W" )){
+        h_Error_Background1[it_y]->GetYaxis()->SetRangeUser(0, 10);
+        if(variable.Contains("Muon_Tight")) h_Error_Background1[it_y]->GetYaxis()->SetRangeUser(0, 5);
+      }
+      else h_Error_Background1[it_y]->GetYaxis()->SetRangeUser(0, 2);
       h_Error_Background1[it_y]->GetXaxis()->SetLabelSize(0.12);
       h_Error_Background1[it_y]->GetYaxis()->SetLabelSize(0.08);
       h_Error_Background1[it_y]->GetXaxis()->SetTitleSize(0.16);
@@ -422,8 +414,9 @@ void makePlots_HNtypeI_WZ(){
       //=========================================
       //==== Save plots
       //=========================================
-      gSystem->Exec("mkdir -p plots_HNtypeI_WZ/"+region);
-      c1->SaveAs("./plots_HNtypeI_WZ/"+region+"/"+IDname+"_"+variable+"_"+year.at(it_y)+".png");
+      gSystem->Exec("mkdir -p plots_Fake/");
+      if(isNorm=="Norm") c1->SaveAs("./plots_Fake/"+channel+"_"+output_region+"_"+variable+"_"+IDname+"_"+year.at(it_y)+"_"+isNorm+".png");
+      else c1->SaveAs("./plots_Fake/"+channel+"_"+output_region+"_"+variable+"_"+IDname+"_"+year.at(it_y)+".png");
 
       delete c_up;
       delete c_down;
@@ -435,17 +428,16 @@ void makePlots_HNtypeI_WZ(){
       delete lg;
       delete lg2;
       delete f_Data[it_y];
-      delete f_Fake[it_y];
+      //delete f_Fake[it_y];
       for(int it_mc=0; it_mc<MCNumber; it_mc++){
         delete f_MC[it_mc][it_y];
         delete h_MC[it_mc][it_y];
       }
       delete h_Data[it_y];
-      delete h_Fake[it_y];
+      //delete h_Fake[it_y];
       delete h_Temp[it_y];
       delete h_Bundle[0][it_y];
       delete h_Bundle[1][it_y];
-      delete h_Bundle[2][it_y]; //JH
       delete h_Error[it_y];
       delete h_Error_Background1[it_y];
       delete h_Error_Background2[it_y];
@@ -456,7 +448,7 @@ void makePlots_HNtypeI_WZ(){
 }
 
 
-void FixOverflows(TH1D *hist, int maxBin, int maxBin_total){
+void FixOverflows(TH1D *hist, int maxBin, int maxBin_total){ // add all bin contents after the last bin to the last bin; so the last bin will contain the last + after
   double binContent = hist->GetBinContent(maxBin);
   double binError = hist->GetBinError(maxBin)*hist->GetBinError(maxBin);
 
