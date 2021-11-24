@@ -1,0 +1,36 @@
+mmm	WZ	Lep1_Pt	HN	10	2	12
+mmm	WZ	Lep1_Eta	HN	5	1	10
+mmm	WZ	Lep2_Pt	HN	10	2	12
+mmm	WZ	Lep2_Eta	HN	5	1	10
+mmm	WZ	Lep3_Pt	HN	10	2	12
+mmm	WZ	Lep3_Eta	HN	5	1	10
+mmm	WZ	ZtagLep1_Pt	HN	10	2	12
+mmm	WZ	ZtagLep2_Pt	HN	5	1	10
+mmm	WZ	WtagLep_Pt	HN	10	2	12
+mmm	WZ	MET	HN	10	1	20
+mmm	WZ	MET2ST	HN	10	1	20
+mmm	WZ	Mt	HN	10	1	20
+mmm	WZ	Lep1_Pt	HN	10	2	12	FR_ex
+mmm	WZ	Lep1_Eta	HN	5	1	10	FR_ex
+mmm	WZ	Lep2_Pt	HN	10	2	12	FR_ex
+mmm	WZ	Lep2_Eta	HN	5	1	10	FR_ex
+mmm	WZ	Lep3_Pt	HN	10	2	12	FR_ex
+mmm	WZ	Lep3_Eta	HN	5	1	10	FR_ex
+mmm	WZ	ZtagLep1_Pt	HN	10	2	12	FR_ex
+mmm	WZ	ZtagLep2_Pt	HN	5	1	10	FR_ex
+mmm	WZ	WtagLep_Pt	HN	10	2	12	FR_ex
+mmm	WZ	MET	HN	10	1	20	FR_ex
+mmm	WZ	MET2ST	HN	10	1	20	FR_ex
+mmm	WZ	Mt	HN	10	1	20	FR_ex
+mmm	WZ	Lep1_Pt	HN2016	10	2	12
+mmm	WZ	Lep1_Eta	HN2016	5	1	10
+mmm	WZ	Lep2_Pt	HN2016	10	2	12
+mmm	WZ	Lep2_Eta	HN2016	5	1	10
+mmm	WZ	Lep3_Pt	HN2016	10	2	12
+mmm	WZ	Lep3_Eta	HN2016	5	1	10
+mmm	WZ	ZtagLep1_Pt	HN2016	10	2	12
+mmm	WZ	ZtagLep2_Pt	HN2016	5	1	10
+mmm	WZ	WtagLep_Pt	HN2016	10	2	12
+mmm	WZ	MET	HN2016	10	1	20
+mmm	WZ	MET2ST	HN2016	10	1	20
+mmm	WZ	Mt	HN2016	10	1	20

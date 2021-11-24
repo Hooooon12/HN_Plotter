@@ -1,36 +1,36 @@
-Muon	btag	DiJet_Mass	SSWWrep	1000	1	3
-Muon	btag	Mu1_Pt	SSWWrep	50	1	6
+Muon	btag	DiJet_Mass	SSWWrep	1000	1	3	varbin
+Muon	btag	Mu1_Pt	SSWWrep	50	1	6	varbin
 Muon	btag	Mu1_Eta	SSWWrep	10	1	5
 Muon	btag	Mu2_Pt	SSWWrep	50	1	6
 Muon	btag	Mu2_Eta	SSWWrep	10	1	5
-Muon	btag	HToverPt1	SSWWrep	2	1	5
-Muon	btag	DiJet_Mass	HN	1000	1	3
-Muon	btag	Mu1_Pt	HN	50	1	6
+Muon	btag	HToverPt1	SSWWrep	2	1	5	varbin
+Muon	btag	DiJet_Mass	HN	1000	1	3	varbin
+Muon	btag	Mu1_Pt	HN	50	1	6	varbin
 Muon	btag	Mu1_Eta	HN	10	1	5
 Muon	btag	Mu2_Pt	HN	50	1	6
 Muon	btag	Mu2_Eta	HN	10	1	5
-Muon	btag	HToverPt1	HN	2	1	5
-Muon	WZ	DiJet_Mass	SSWWrep	1000	1	3
-Muon	WZ	Mu1_Pt	SSWWrep	50	1	6
+Muon	btag	HToverPt1	HN	2	1	5	varbin
+Muon	WZ	DiJet_Mass	SSWWrep	1000	1	3	varbin
+Muon	WZ	Mu1_Pt	SSWWrep	50	1	6	varbin
 Muon	WZ	Mu1_Eta	SSWWrep	10	1	5
 Muon	WZ	Mu2_Pt	SSWWrep	50	1	6
 Muon	WZ	Mu2_Eta	SSWWrep	10	1	5
-Muon	WZ	HToverPt1	SSWWrep	2	1	5
-Muon	WZ	DiJet_Mass	HN	1000	1	3
-Muon	WZ	Mu1_Pt	HN	50	1	6
+Muon	WZ	HToverPt1	SSWWrep	2	1	5	varbin
+Muon	WZ	DiJet_Mass	HN	1000	1	3	varbin
+Muon	WZ	Mu1_Pt	HN	50	1	6	varbin
 Muon	WZ	Mu1_Eta	HN	10	1	5
 Muon	WZ	Mu2_Pt	HN	50	1	6
 Muon	WZ	Mu2_Eta	HN	10	1	5
-Muon	WZ	HToverPt1	HN	2	1	5
-Muon	WZb	DiJet_Mass	SSWWrep	1000	1	3
-Muon	WZb	Mu1_Pt	SSWWrep	50	1	6
+Muon	WZ	HToverPt1	HN	2	1	5	varbin
+Muon	WZb	DiJet_Mass	SSWWrep	1000	1	3	varbin
+Muon	WZb	Mu1_Pt	SSWWrep	50	1	6	varbin
 Muon	WZb	Mu1_Eta	SSWWrep	10	1	5
 Muon	WZb	Mu2_Pt	SSWWrep	50	1	6
 Muon	WZb	Mu2_Eta	SSWWrep	10	1	5
-Muon	WZb	HToverPt1	SSWWrep	2	1	5
-Muon	WZb	DiJet_Mass	HN	1000	1	3
-Muon	WZb	Mu1_Pt	HN	50	1	6
+Muon	WZb	HToverPt1	SSWWrep	2	1	5	varbin
+Muon	WZb	DiJet_Mass	HN	1000	1	3	varbin
+Muon	WZb	Mu1_Pt	HN	50	1	6	varbin
 Muon	WZb	Mu1_Eta	HN	10	1	5
 Muon	WZb	Mu2_Pt	HN	50	1	6
 Muon	WZb	Mu2_Eta	HN	10	1	5
-Muon	WZb	HToverPt1	HN	2	1	5
+Muon	WZb	HToverPt1	HN	2	1	5	varbin

@@ -33,15 +33,17 @@ void makePlots_SSWW_SR_blind(){
     std::istringstream is(histline);
     TString this_line = histline;
     if(this_line.Contains("#")||this_line=="") continue;
-    TString channel, region, variable, IDname, txt_region, output_region, txt_variable, PDname;
-    int rebin, minBinNumber, maxBinNumber;
+    TString channel, region, variable, IDname, txt_region, output_region, txt_variable, PDname, rebin_str, rebin_type, sel_type;
+    int minBinNumber, maxBinNumber;
     is >> channel;
     is >> region;
     is >> variable;
     is >> IDname;
-    is >> rebin;
+    is >> rebin_str;
     is >> minBinNumber;
     is >> maxBinNumber;
+    is >> rebin_type;
+    is >> sel_type;
 
     // txt_region, output_region
     if(channel.Contains("Muon")){
@@ -58,7 +60,14 @@ void makePlots_SSWW_SR_blind(){
     if(variable.Contains("Mu2_Pt")) txt_variable = "p_{T}(#mu_{2}) (GeV)";
     if(variable.Contains("Mu1_Eta")) txt_variable = "#eta(#mu_{1})";
     if(variable.Contains("Mu2_Eta")) txt_variable = "#eta(#mu_{2})";
+    if(variable.Contains("lljj_Mass")) txt_variable = "m(lljj) (GeV)";
+    if(variable.Contains("l1jj_Mass")) txt_variable = "m(l_{1}jj) (GeV)";
+    if(variable.Contains("l2jj_Mass")) txt_variable = "m(l_{2}jj) (GeV)";
+    if(variable.Contains("l1J_Mass")) txt_variable = "m(l1J) (GeV)";
+    if(variable.Contains("l2J_Mass")) txt_variable = "m(l2J) (GeV)";
     if(variable.Contains("DiJet_Mass")) txt_variable = "m(jj) (GeV)";
+    if(variable.Contains("FatJet_Mass")) txt_variable = "m(J) (GeV)";
+    if(variable.Contains("FatJet_Pt")) txt_variable = "p_{T}(J) (GeV)";
     if(variable.Contains("HToverPt1")) txt_variable = "H_{T}/p_{T}^{#mu_{1}} (GeV)";
     if(variable.Contains("Mt")) txt_variable = "M_{T}(l,#slash{E}_{T}^{miss}) (GeV)";
     if(variable.Contains("MET")) txt_variable = "#slash{E}_{T}^{miss} (GeV)";
@@ -76,7 +85,8 @@ void makePlots_SSWW_SR_blind(){
 
     // Year loop
     for(int it_y=0; it_y<year.size(); it_y++){
-      file_path = SKFlatVersion+"/"+analyzer+"/"+year.at(it_y)+"/";
+      if(sel_type=="New") file_path = SKFlatVersion+"/"+analyzer+"/"+year.at(it_y)+"/"+"jcln_inv__fatjet_veto__";
+      else file_path = SKFlatVersion+"/"+analyzer+"/"+year.at(it_y)+"/";
 
       // PDname in 2018 : DoubleEG -> EGamma
       if(channel.Contains("Electron")){
@@ -89,43 +99,51 @@ void makePlots_SSWW_SR_blind(){
       //=========================================
 
       // DATA, Fake
-      f_Data[it_y]   = new TFile(workdir+file_path+"DATA/"+analyzer+"_"+skim+"_"+PDname+".root");
+      //f_Data[it_y]   = new TFile(workdir+file_path+"DATA/"+analyzer+"_"+skim+"_"+PDname+".root");
       f_Fake[it_y]   = new TFile(workdir+file_path+"RunFake__/DATA/"+analyzer+"_"+skim+"_"+PDname+".root");
       //MC : WpWp
-      f_MC[0][it_y]  = new TFile(workdir+file_path+analyzer+"_WpWp_EWK.root");
-      f_MC[1][it_y]  = new TFile(workdir+file_path+analyzer+"_WpWp_QCD.root");
+      f_MC[0][it_y]  = new TFile(workdir+file_path+"/"+analyzer+"_WpWp_EWK.root");
+      f_MC[1][it_y]  = new TFile(workdir+file_path+"/"+analyzer+"_WpWp_QCD.root");
       // MC : top
-      f_MC[2][it_y]  = new TFile(workdir+file_path+analyzer+"_ttWToLNu.root");
-      f_MC[3][it_y]  = new TFile(workdir+file_path+analyzer+"_ttZToLLNuNu.root");
+      if(sel_type=="New"){
+        f_MC[2][it_y]  = new TFile(workdir+file_path+"/"+analyzer+"_"+skim+"_ttWToLNu.root");
+        f_MC[3][it_y]  = new TFile(workdir+file_path+"/"+analyzer+"_"+skim+"_ttZToLLNuNu.root"); // let's use skim ttW, ttZ for all run.
+      }
+      else{
+        f_MC[2][it_y]  = new TFile(workdir+file_path+"/"+analyzer+"_ttWToLNu.root");
+        f_MC[3][it_y]  = new TFile(workdir+file_path+"/"+analyzer+"_ttZToLLNuNu.root");
+      }
       // MC : WZ
-      f_MC[4][it_y] = new TFile(workdir+file_path+analyzer+"_WZTo3LNu_powheg.root");
-      f_MC[5][it_y] = new TFile(workdir+file_path+analyzer+"_WZJJ_WToLNu.root");
+      if(sel_type=="New") f_MC[4][it_y] = new TFile(workdir+file_path+"/"+analyzer+"_"+skim+"_WZTo3LNu_powheg.root");
+      else f_MC[4][it_y] = new TFile(workdir+file_path+"/"+analyzer+"_WZTo3LNu_powheg.root");
+      f_MC[5][it_y] = new TFile(workdir+file_path+"/"+analyzer+"_WLLJJ_WToLNu_EWK.root");
       // MC : ZZ
-      f_MC[6][it_y] = new TFile(workdir+file_path+analyzer+"_ZZTo4L_powheg.root");
-      f_MC[7][it_y] = new TFile(workdir+file_path+analyzer+"_ggZZTo2mu2tau.root");
-      f_MC[8][it_y] = new TFile(workdir+file_path+analyzer+"_ggZZTo4mu.root");
+      if(sel_type=="New") f_MC[6][it_y] = new TFile(workdir+file_path+"/"+analyzer+"_"+skim+"_ZZTo4L_powheg.root");
+      else f_MC[6][it_y] = new TFile(workdir+file_path+"/"+analyzer+"_ZZTo4L_powheg.root");
+      f_MC[7][it_y] = new TFile(workdir+file_path+"/"+analyzer+"_ggZZTo2mu2tau.root");
+      f_MC[8][it_y] = new TFile(workdir+file_path+"/"+analyzer+"_ggZZTo4mu.root");
       // MC : tZq
-      f_MC[9][it_y] = new TFile(workdir+file_path+analyzer+"_tZq.root");
+      f_MC[9][it_y] = new TFile(workdir+file_path+"/"+analyzer+"_tZq.root");
 
       //=========================================
       //==== Get histograms
       //=========================================
 
       // DATA, Fake
-      h_Data[it_y]  = (TH1D*)f_Data[it_y]->Get(region+"/"+variable+"_"+IDname);
+      //h_Data[it_y]  = (TH1D*)f_Data[it_y]->Get(region+"/"+variable+"_"+IDname);
       h_Fake[it_y]  = (TH1D*)f_Fake[it_y]->Get(region+"/"+variable+"_"+IDname);
       // MC
       for(int it_mc=0; it_mc<MCNumber; it_mc++){
         h_MC[it_mc][it_y] = (TH1D*)f_MC[it_mc][it_y]->Get(region+"/"+variable+"_"+IDname);
       }
 
-      h_Data[it_y]->SetDirectory(0);
+      //h_Data[it_y]->SetDirectory(0);
       h_Fake[it_y]->SetDirectory(0);
       for(int it_mc=0; it_mc<MCNumber; it_mc++){
         if(h_MC[it_mc][it_y]) h_MC[it_mc][it_y]->SetDirectory(0);
       }
 
-      f_Data[it_y]->Close();
+      //f_Data[it_y]->Close();
       f_Fake[it_y]->Close();
       for(int it_mc=0; it_mc<MCNumber; it_mc++){
         f_MC[it_mc][it_y]->Close();
@@ -136,7 +154,8 @@ void makePlots_SSWW_SR_blind(){
       //=========================================
 
       // Make an empty histogram for adding backgrounds
-      h_Temp[it_y] = (TH1D*)h_Data[it_y]->Clone();
+      //h_Temp[it_y] = (TH1D*)h_Data[it_y]->Clone();
+      h_Temp[it_y] = (TH1D*)h_Fake[it_y]->Clone();
       maxBinNumber_temp = h_Temp[it_y]->GetNbinsX();
       for(int i=0; i<maxBinNumber_temp+2; i++){
         h_Temp[it_y]->SetBinContent(i, 0.);
@@ -175,24 +194,62 @@ void makePlots_SSWW_SR_blind(){
         if(h_MC[it_mc][it_y]) h_Bundle[3][it_y]->Add(h_MC[it_mc][it_y]);
       }
 
+      int rebin, Nbin;
+      double xbins_mjj[4] = {750., 1200., 1800., 3000.};
+      double xbins_mu1pt[7] = {30., 50., 70., 90., 120., 160., 300.};
+      double xbins_HToverPt1[4] = {0., 2., 5., 10.};
+      map<TString, double*> mapbin;
+      mapbin["DiJet_Mass"] = xbins_mjj;
+      mapbin["Mu1_Pt"] = xbins_mu1pt;
+      mapbin["HToverPt1"] = xbins_HToverPt1;
       // Rebin
-      h_Data[it_y]->Rebin(rebin);
-      h_Fake[it_y]->Rebin(rebin);
-      h_Bundle[0][it_y]->Rebin(rebin);
-      h_Bundle[1][it_y]->Rebin(rebin);
-      h_Bundle[2][it_y]->Rebin(rebin);
-      h_Bundle[3][it_y]->Rebin(rebin);
-      h_MC[9][it_y]->Rebin(rebin);
-      h_Temp[it_y]->Rebin(rebin);
+      if(rebin_type=="varbin"){
+        cout << "apply variable bins..." << endl;
+        if(variable.Contains("DiJet_Mass")){
+          Nbin = 3;
+        }
+        if(variable.Contains("Mu1_Pt")){
+          Nbin = 6;
+        }
+        if(variable.Contains("HToverPt1")){
+          Nbin = 3;
+        }
+        //h_Data[it_y] = (TH1D*)h_Data[it_y]->Rebin(Nbin,"",mapbin[variable]);
+        h_Fake[it_y] = (TH1D*)h_Fake[it_y]->Rebin(Nbin,"",mapbin[variable]);
+        h_Bundle[0][it_y] = (TH1D*)h_Bundle[0][it_y]->Rebin(Nbin,"",mapbin[variable]);
+        h_Bundle[1][it_y] = (TH1D*)h_Bundle[1][it_y]->Rebin(Nbin,"",mapbin[variable]);
+        h_Bundle[2][it_y] = (TH1D*)h_Bundle[2][it_y]->Rebin(Nbin,"",mapbin[variable]);
+        h_Bundle[3][it_y] = (TH1D*)h_Bundle[3][it_y]->Rebin(Nbin,"",mapbin[variable]);
+        h_MC[9][it_y] = (TH1D*)h_MC[9][it_y]->Rebin(Nbin,"",mapbin[variable]);
+        h_Temp[it_y] = (TH1D*)h_Temp[it_y]->Rebin(Nbin,"",mapbin[variable]);
 
-      maxBinNumber_total = h_Data[it_y]->GetNbinsX();  // This is needed for adding overflow bins
+        minBinNumber = 1;
+        //maxBinNumber = h_Data[it_y]->GetNbinsX();
+        maxBinNumber = h_Fake[it_y]->GetNbinsX();
+      }
+      else{
+        rebin = rebin_str.Atoi();
+        //h_Data[it_y]->Rebin(rebin);
+        h_Fake[it_y]->Rebin(rebin);
+        h_Bundle[0][it_y]->Rebin(rebin);
+        h_Bundle[1][it_y]->Rebin(rebin);
+        h_Bundle[2][it_y]->Rebin(rebin);
+        h_Bundle[3][it_y]->Rebin(rebin);
+        h_MC[9][it_y]->Rebin(rebin);
+        h_Temp[it_y]->Rebin(rebin);
+      }
+
+      //maxBinNumber_total = h_Data[it_y]->GetNbinsX();  // This is needed for adding overflow bins
+      maxBinNumber_total = h_Fake[it_y]->GetNbinsX();  // This is needed for adding overflow bins
 
       // This is needed for drawing a line in the ratio plot
-      minRange = h_Data[it_y]->GetBinLowEdge(minBinNumber);
-      maxRange = h_Data[it_y]->GetBinLowEdge(maxBinNumber) + h_Data[it_y]->GetBinWidth(maxBinNumber);
+      //minRange = h_Data[it_y]->GetBinLowEdge(minBinNumber);
+      //maxRange = h_Data[it_y]->GetBinLowEdge(maxBinNumber) + h_Data[it_y]->GetBinWidth(maxBinNumber);
+      minRange = h_Fake[it_y]->GetBinLowEdge(minBinNumber);
+      maxRange = h_Fake[it_y]->GetBinLowEdge(maxBinNumber) + h_Fake[it_y]->GetBinWidth(maxBinNumber);
 
       // Fix overflows
-      FixOverflows(h_Data[it_y], maxBinNumber, maxBinNumber_total);
+      //FixOverflows(h_Data[it_y], maxBinNumber, maxBinNumber_total);
       FixOverflows(h_Fake[it_y], maxBinNumber, maxBinNumber_total);
       FixOverflows(h_Bundle[0][it_y], maxBinNumber, maxBinNumber_total);
       FixOverflows(h_Bundle[1][it_y], maxBinNumber, maxBinNumber_total);
@@ -395,7 +452,8 @@ void makePlots_SSWW_SR_blind(){
       //==== Save plots
       //=========================================
       gSystem->Exec("mkdir -p plots_SSWW_SR_blind/plots_SSWW_"+region);
-      c1->SaveAs("./plots_SSWW_SR_blind/plots_SSWW_"+region+"/"+variable+"_"+IDname+"_"+year.at(it_y)+".png");
+      if(sel_type=="New") c1->SaveAs("./plots_SSWW_SR_blind/plots_SSWW_"+region+"/"+variable+"_"+IDname+"_"+year.at(it_y)+"_New.png");
+      else c1->SaveAs("./plots_SSWW_SR_blind/plots_SSWW_"+region+"/"+variable+"_"+IDname+"_"+year.at(it_y)+".png");
 
       delete c_up;
       delete c_down;
@@ -406,13 +464,13 @@ void makePlots_SSWW_SR_blind(){
       delete hs;
       delete lg;
       delete lg2;
-      delete f_Data[it_y];
+      //delete f_Data[it_y];
       delete f_Fake[it_y];
       for(int it_mc=0; it_mc<MCNumber; it_mc++){
         delete f_MC[it_mc][it_y];
         delete h_MC[it_mc][it_y];
       }
-      delete h_Data[it_y];
+      //delete h_Data[it_y];
       delete h_Fake[it_y];
       delete h_Temp[it_y];
       delete h_Bundle[0][it_y];

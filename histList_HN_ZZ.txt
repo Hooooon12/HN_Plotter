@@ -1,0 +1,36 @@
+mmmm	ZZ	Lep1_Pt	HN	10	2	12
+mmmm	ZZ	Lep1_Eta	HN	5	1	10
+mmmm	ZZ	Lep2_Pt	HN	10	2	12
+mmmm	ZZ	Lep2_Eta	HN	5	1	10
+mmmm	ZZ	Lep3_Pt	HN	10	2	12
+mmmm	ZZ	Lep3_Eta	HN	5	1	10
+mmmm	ZZ	Lep4_Pt	HN	10	2	12
+mmmm	ZZ	Lep4_Eta	HN	5	1	10
+mmmm	ZZ	MET	HN	10	1	20
+mmmm	ZZ	MET2ST	HN	10	1	20
+mmmm	ZZ	ZCand1_Mass	HN	5	1	40
+mmmm	ZZ	ZCand2_Mass	HN	5	1	40
+mmmm	ZZ	Lep1_Pt	HN	10	2	12	FR_ex
+mmmm	ZZ	Lep1_Eta	HN	5	1	10	FR_ex
+mmmm	ZZ	Lep2_Pt	HN	10	2	12	FR_ex
+mmmm	ZZ	Lep2_Eta	HN	5	1	10	FR_ex
+mmmm	ZZ	Lep3_Pt	HN	10	2	12	FR_ex
+mmmm	ZZ	Lep3_Eta	HN	5	1	10	FR_ex
+mmmm	ZZ	Lep4_Pt	HN	10	2	12	FR_ex
+mmmm	ZZ	Lep4_Eta	HN	5	1	10	FR_ex
+mmmm	ZZ	MET	HN	10	1	20	FR_ex
+mmmm	ZZ	MET2ST	HN	10	1	20	FR_ex
+mmmm	ZZ	ZCand1_Mass	HN	5	1	40	FR_ex
+mmmm	ZZ	ZCand2_Mass	HN	5	1	40	FR_ex
+mmmm	ZZ	Lep1_Pt	HN2016	10	2	12
+mmmm	ZZ	Lep1_Eta	HN2016	5	1	10
+mmmm	ZZ	Lep2_Pt	HN2016	10	2	12
+mmmm	ZZ	Lep2_Eta	HN2016	5	1	10
+mmmm	ZZ	Lep3_Pt	HN2016	10	2	12
+mmmm	ZZ	Lep3_Eta	HN2016	5	1	10
+mmmm	ZZ	Lep4_Pt	HN2016	10	2	12
+mmmm	ZZ	Lep4_Eta	HN2016	5	1	10
+mmmm	ZZ	MET	HN2016	10	1	20
+mmmm	ZZ	MET2ST	HN2016	10	1	20
+mmmm	ZZ	ZCand1_Mass	HN2016	5	1	40
+mmmm	ZZ	ZCand2_Mass	HN2016	5	1	40

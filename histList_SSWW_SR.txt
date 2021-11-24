@@ -1,24 +1,79 @@
-Muon	SR	DiJet_Mass	SSWWrep	1000	1	3
-Muon	SR	Mu1_Pt	SSWWrep	50	1	6
-Muon	SR	Mu1_Eta	SSWWrep	10	1	5
-Muon	SR	Mu2_Pt	SSWWrep	50	1	6
-Muon	SR	Mu2_Eta	SSWWrep	10	1	5
-Muon	SR	HToverPt1	SSWWrep	2	1	5
-Muon	SR	DiJet_Mass	HN	1000	1	3
-Muon	SR	Mu1_Pt	HN	50	1	6
-Muon	SR	Mu1_Eta	HN	10	1	5
-Muon	SR	Mu2_Pt	HN	50	1	6
-Muon	SR	Mu2_Eta	HN	10	1	5
-Muon	SR	HToverPt1	HN	2	1	5
-Muon	SR_inv	DiJet_Mass	SSWWrep	1000	1	3
-Muon	SR_inv	Mu1_Pt	SSWWrep	50	1	6
-Muon	SR_inv	Mu1_Eta	SSWWrep	10	1	5
-Muon	SR_inv	Mu2_Pt	SSWWrep	50	1	6
-Muon	SR_inv	Mu2_Eta	SSWWrep	10	1	5
-Muon	SR_inv	HToverPt1	SSWWrep	2	1	5
-Muon	SR_inv	DiJet_Mass	HN	1000	1	3
-Muon	SR_inv	Mu1_Pt	HN	50	1	6
-Muon	SR_inv	Mu1_Eta	HN	10	1	5
-Muon	SR_inv	Mu2_Pt	HN	50	1	6
-Muon	SR_inv	Mu2_Eta	HN	10	1	5
-Muon	SR_inv	HToverPt1	HN	2	1	5
+#Muon	SR	DiJet_Mass	SSWWrep	1000	1	3	varbin
+#Muon	SR	Mu1_Pt	SSWWrep	50	1	6	varbin
+#Muon	SR	Mu1_Eta	SSWWrep	10	1	5
+#Muon	SR	Mu2_Pt	SSWWrep	50	1	6
+#Muon	SR	Mu2_Eta	SSWWrep	10	1	5
+#Muon	SR	HToverPt1	SSWWrep	2	1	5	varbin
+Muon	SR	DiJet_Mass	HN	1000	1	3	varbin	New
+Muon	SR	Mu1_Pt	HN	50	1	6	varbin	New
+Muon	SR	Mu1_Eta	HN	10	1	5	even	New
+Muon	SR	Mu2_Pt	HN	50	1	6	even	New
+Muon	SR	Mu2_Eta	HN	10	1	5	even	New
+Muon	SR	HToverPt1	HN	2	1	5	varbin	New
+#Muon	SR_inv	DiJet_Mass	SSWWrep	1000	1	3	varbin
+#Muon	SR_inv	Mu1_Pt	SSWWrep	50	1	6	varbin
+#Muon	SR_inv	Mu1_Eta	SSWWrep	10	1	5
+#Muon	SR_inv	Mu2_Pt	SSWWrep	50	1	6
+#Muon	SR_inv	Mu2_Eta	SSWWrep	10	1	5
+#Muon	SR_inv	HToverPt1	SSWWrep	2	1	5	varbin
+Muon	SR_inv	DiJet_Mass	HN	1000	1	3	varbin	New
+Muon	SR_inv	Mu1_Pt	HN	50	1	6	varbin	New
+Muon	SR_inv	Mu1_Eta	HN	10	1	5	even	New
+Muon	SR_inv	Mu2_Pt	HN	50	1	6	even	New
+Muon	SR_inv	Mu2_Eta	HN	10	1	5	even	New
+Muon	SR_inv	HToverPt1	HN	2	1	5	varbin	New
+#Muon	highSR1	DiJet_Mass	SSWWrep	1000	1	3	varbin
+#Muon	highSR1	Mu1_Pt	SSWWrep	50	1	6	varbin
+#Muon	highSR1	Mu1_Eta	SSWWrep	10	1	5
+#Muon	highSR1	Mu2_Pt	SSWWrep	50	1	6
+#Muon	highSR1	Mu2_Eta	SSWWrep	10	1	5
+#Muon	highSR1	HToverPt1	SSWWrep	2	1	5	varbin
+Muon	highSR1	MET	HN	10	1	30	even	New
+Muon	highSR1	DiJet_Mass	HN	50	1	60	even	New
+Muon	highSR1	lljj_Mass	HN	50	1	60	even	New
+Muon	highSR1	l1jj_Mass	HN	50	1	60	even	New
+Muon	highSR1	l2jj_Mass	HN	50	1	60	even	New
+Muon	highSR1	Mu1_Pt	HN	50	1	20	even	New
+Muon	highSR1	Mu1_Eta	HN	10	1	5	even	New
+Muon	highSR1	Mu2_Pt	HN	50	1	20	even	New
+Muon	highSR1	Mu2_Eta	HN	10	1	5	even	New
+Muon	highSR1	HToverPt1	HN	2	1	5	varbin	New
+Muon	highSR1/jeta2p7	MET	HN	10	1	30	even	New
+Muon	highSR1/jeta2p7	DiJet_Mass	HN	50	1	60	even	New
+Muon	highSR1/jeta2p7	Mu1_Pt	HN	50	1	20	even	New
+Muon	highSR1/jeta2p7	Mu1_Eta	HN	10	1	5	even	New
+Muon	highSR1/jeta2p7	Mu2_Pt	HN	50	1	20	even	New
+Muon	highSR1/jeta2p7	Mu2_Eta	HN	10	1	5	even	New
+Muon	highSR1/jeta2p7	HToverPt1	HN	2	1	5	varbin	New
+Muon	highSR1_1jet	MET	HN	10	1	30	even	New
+Muon	highSR1_1jet	Mu1_Pt	HN	50	1	20	even	New
+Muon	highSR1_1jet	Mu1_Eta	HN	10	1	5	even	New
+Muon	highSR1_1jet	Mu2_Pt	HN	50	1	20	even	New
+Muon	highSR1_1jet	Mu2_Eta	HN	10	1	5	even	New
+Muon	highSR1_1jet	HToverPt1	HN	2	1	5	varbin	New
+Muon	highSR1_1jet/jeta2p7	MET	HN	10	1	30	even	New
+Muon	highSR1_1jet/jeta2p7	Mu1_Pt	HN	50	1	20	even	New
+Muon	highSR1_1jet/jeta2p7	Mu1_Eta	HN	10	1	5	even	New
+Muon	highSR1_1jet/jeta2p7	Mu2_Pt	HN	50	1	20	even	New
+Muon	highSR1_1jet/jeta2p7	Mu2_Eta	HN	10	1	5	even	New
+Muon	highSR1_1jet/jeta2p7	HToverPt1	HN	2	1	5	varbin	New
+Muon	highSR2	FatJet_Pt	HN	10	15	100	even	New
+Muon	highSR2	FatJet_Mass	HN	10	5	20	even	New
+Muon	highSR2	l1J_Mass	HN	50	1	60	even	New
+Muon	highSR2	l2J_Mass	HN	50	1	60	even	New
+Muon	highSR2	MET	HN	10	1	30	even	New
+Muon	highSR2	Mu1_Pt	HN	50	1	20	even	New
+Muon	highSR2	Mu1_Eta	HN	10	1	5	even	New
+Muon	highSR2	Mu2_Pt	HN	50	1	20	even	New
+Muon	highSR2	Mu2_Eta	HN	10	1	5	even	New
+Muon	highSR2	HToverPt1	HN	2	1	5	varbin	New
+Muon	highSR2/jeta2p7	FatJet_Pt	HN	10	15	100	even	New
+Muon	highSR2/jeta2p7	FatJet_Mass	HN	10	5	20	even	New
+Muon	highSR2/jeta2p7	l1J_Mass	HN	50	1	60	even	New
+Muon	highSR2/jeta2p7	l2J_Mass	HN	50	1	60	even	New
+Muon	highSR2/jeta2p7	MET	HN	10	1	30	even	New
+Muon	highSR2/jeta2p7	Mu1_Pt	HN	50	1	20	even	New
+Muon	highSR2/jeta2p7	Mu1_Eta	HN	10	1	5	even	New
+Muon	highSR2/jeta2p7	Mu2_Pt	HN	50	1	20	even	New
+Muon	highSR2/jeta2p7	Mu2_Eta	HN	10	1	5	even	New
+Muon	highSR2/jeta2p7	HToverPt1	HN	2	1	5	varbin	New
