@@ -76,8 +76,8 @@ void makePlots_SSWW_SR_blind(){
     if(variable.Contains("TriLep")) txt_variable = "m(lll) (GeV)";
 
     // Declare variables needed for making plots 
-    TFile *f_Data[3], *f_Fake[3], *f_MC[MCNumber][3];
-    TH1D *h_Data[3], *h_Fake[3], *h_Temp[3], *h_Bundle[3][3], *h_MC[MCNumber][3], *h_Error[3], *h_Error_Background1[3], *h_Error_Background2[3], *h_Ratio[3];
+    TFile *f_Data[3], *f_Fake[3], *f_MC[MCNumber][3], *f_SSWWTypeI[3], *f_DYTypeI[3], *f_VBFTypeI[3];
+    TH1D *h_Data[3], *h_Fake[3], *h_Temp[3], *h_Bundle[3][3], *h_MC[MCNumber][3], *h_Error[3], *h_Error_Background1[3], *h_Error_Background2[3], *h_Ratio[3], *h_SSWWTypeI[3], *h_DYTypeI[3], *h_VBFTypeI[3];
     TCanvas *c1;
     TPad *c_up, *c_down;
     THStack *hs;
@@ -98,8 +98,11 @@ void makePlots_SSWW_SR_blind(){
       //==== Set input ROOT files
       //=========================================
 
-      // DATA, Fake
+      // DATA, Signal, Fake
       //f_Data[it_y]   = new TFile(workdir+file_path+"DATA/"+analyzer+"_"+skim+"_"+PDname+".root");
+      f_SSWWTypeI[it_y]   = new TFile(workdir+file_path+"/"+analyzer+"_SSWW_HN_1500.root");
+      f_DYTypeI[it_y]   = new TFile(workdir+file_path+"/"+analyzer+"_DYTypeI_SS_MuMu_M1500.root");
+      f_VBFTypeI[it_y]   = new TFile(workdir+file_path+"/"+analyzer+"_VBFTypeI_SS_MuMu_M1500.root");
       f_Fake[it_y]   = new TFile(workdir+file_path+"RunFake__/DATA/"+analyzer+"_"+skim+"_"+PDname+".root");
       //MC : WpWp
       f_MC[0][it_y]  = new TFile(workdir+file_path+"/"+analyzer+"_WpWp_EWK.root");
@@ -131,6 +134,9 @@ void makePlots_SSWW_SR_blind(){
 
       // DATA, Fake
       //h_Data[it_y]  = (TH1D*)f_Data[it_y]->Get(region+"/"+variable+"_"+IDname);
+      h_SSWWTypeI[it_y]  = (TH1D*)f_SSWWTypeI[it_y]->Get(region+"/"+variable+"_"+IDname);
+      h_DYTypeI[it_y]  = (TH1D*)f_DYTypeI[it_y]->Get(region+"/"+variable+"_"+IDname);
+      h_VBFTypeI[it_y]  = (TH1D*)f_VBFTypeI[it_y]->Get(region+"/"+variable+"_"+IDname);
       h_Fake[it_y]  = (TH1D*)f_Fake[it_y]->Get(region+"/"+variable+"_"+IDname);
       // MC
       for(int it_mc=0; it_mc<MCNumber; it_mc++){
@@ -138,12 +144,18 @@ void makePlots_SSWW_SR_blind(){
       }
 
       //h_Data[it_y]->SetDirectory(0);
+      h_SSWWTypeI[it_y]->SetDirectory(0);
+      h_DYTypeI[it_y]->SetDirectory(0);
+      h_VBFTypeI[it_y]->SetDirectory(0);
       h_Fake[it_y]->SetDirectory(0);
       for(int it_mc=0; it_mc<MCNumber; it_mc++){
         if(h_MC[it_mc][it_y]) h_MC[it_mc][it_y]->SetDirectory(0);
       }
 
       //f_Data[it_y]->Close();
+      f_SSWWTypeI[it_y]->Close();
+      f_DYTypeI[it_y]->Close();
+      f_VBFTypeI[it_y]->Close();
       f_Fake[it_y]->Close();
       for(int it_mc=0; it_mc<MCNumber; it_mc++){
         f_MC[it_mc][it_y]->Close();
@@ -197,7 +209,7 @@ void makePlots_SSWW_SR_blind(){
       int rebin, Nbin;
       double xbins_mjj[4] = {750., 1200., 1800., 3000.};
       double xbins_mu1pt[7] = {30., 50., 70., 90., 120., 160., 300.};
-      double xbins_HToverPt1[4] = {0., 2., 5., 10.};
+      double xbins_HToverPt1[5] = {0., 1., 2., 5., 10.};
       map<TString, double*> mapbin;
       mapbin["DiJet_Mass"] = xbins_mjj;
       mapbin["Mu1_Pt"] = xbins_mu1pt;
@@ -212,9 +224,12 @@ void makePlots_SSWW_SR_blind(){
           Nbin = 6;
         }
         if(variable.Contains("HToverPt1")){
-          Nbin = 3;
+          Nbin = 4;
         }
         //h_Data[it_y] = (TH1D*)h_Data[it_y]->Rebin(Nbin,"",mapbin[variable]);
+        h_SSWWTypeI[it_y] = (TH1D*)h_SSWWTypeI[it_y]->Rebin(Nbin,"",mapbin[variable]);
+        h_DYTypeI[it_y] = (TH1D*)h_DYTypeI[it_y]->Rebin(Nbin,"",mapbin[variable]);
+        h_VBFTypeI[it_y] = (TH1D*)h_VBFTypeI[it_y]->Rebin(Nbin,"",mapbin[variable]);
         h_Fake[it_y] = (TH1D*)h_Fake[it_y]->Rebin(Nbin,"",mapbin[variable]);
         h_Bundle[0][it_y] = (TH1D*)h_Bundle[0][it_y]->Rebin(Nbin,"",mapbin[variable]);
         h_Bundle[1][it_y] = (TH1D*)h_Bundle[1][it_y]->Rebin(Nbin,"",mapbin[variable]);
@@ -230,6 +245,9 @@ void makePlots_SSWW_SR_blind(){
       else{
         rebin = rebin_str.Atoi();
         //h_Data[it_y]->Rebin(rebin);
+        h_SSWWTypeI[it_y]->Rebin(rebin);
+        h_DYTypeI[it_y]->Rebin(rebin);
+        h_VBFTypeI[it_y]->Rebin(rebin);
         h_Fake[it_y]->Rebin(rebin);
         h_Bundle[0][it_y]->Rebin(rebin);
         h_Bundle[1][it_y]->Rebin(rebin);
@@ -250,6 +268,9 @@ void makePlots_SSWW_SR_blind(){
 
       // Fix overflows
       //FixOverflows(h_Data[it_y], maxBinNumber, maxBinNumber_total);
+      FixOverflows(h_SSWWTypeI[it_y], maxBinNumber, maxBinNumber_total);
+      FixOverflows(h_DYTypeI[it_y], maxBinNumber, maxBinNumber_total);
+      FixOverflows(h_VBFTypeI[it_y], maxBinNumber, maxBinNumber_total);
       FixOverflows(h_Fake[it_y], maxBinNumber, maxBinNumber_total);
       FixOverflows(h_Bundle[0][it_y], maxBinNumber, maxBinNumber_total);
       FixOverflows(h_Bundle[1][it_y], maxBinNumber, maxBinNumber_total);
@@ -317,6 +338,19 @@ void makePlots_SSWW_SR_blind(){
       //h_Data[it_y]->SetMarkerStyle(20);
       //h_Data[it_y]->SetMarkerColor(kBlack);
       //h_Data[it_y]->Draw("ep same");
+  
+      // Draw SSWWTypeI
+      h_SSWWTypeI[it_y]->SetLineColor(kRed);
+      h_SSWWTypeI[it_y]->SetLineWidth(2);
+      h_SSWWTypeI[it_y]->Draw("hist same");
+      h_DYTypeI[it_y]->SetLineColor(kGreen);
+      h_DYTypeI[it_y]->SetLineWidth(2);
+      h_DYTypeI[it_y]->Scale(1000000);
+      h_DYTypeI[it_y]->Draw("hist same");
+      h_VBFTypeI[it_y]->SetLineColor(kBlue);
+      h_VBFTypeI[it_y]->SetLineWidth(2);
+      h_VBFTypeI[it_y]->Scale(1000000);
+      h_VBFTypeI[it_y]->Draw("hist same");
 
       // Set Min or Max of y axis
       //max_Data = h_Data[it_y]->GetBinContent(h_Data[it_y]->GetMaximumBin());
@@ -325,12 +359,16 @@ void makePlots_SSWW_SR_blind(){
       max_Hist = max_Background;
       hs->SetMinimum(0);
       //hs->SetMaximum(max_Hist*10); //JH : use this when using SetLogy
-      hs->SetMaximum(max_Hist+10); //JH
+      if(region=="SR") hs->SetMaximum(max_Hist+100); //JH : use this when drawing SSWW signal which has large entry
+      else hs->SetMaximum(max_Hist+10); //JH
 
       // Draw the legend
       lg = new TLegend(0.6, 0.45, 0.9, 0.85);
-      lg->AddEntry(h_Error[it_y], "Stat. + Syst. Uncertainty", "f");
       //lg->AddEntry(h_Data[it_y], "Data", "lep");
+      lg->AddEntry(h_SSWWTypeI[it_y], "SSWW_M1500 (V=1)", "l");
+      lg->AddEntry(h_DYTypeI[it_y], "100 * C.C.DY_M1500 (V=1)", "l");
+      lg->AddEntry(h_VBFTypeI[it_y], "100 * W#gamma_M1500 (V=1)", "l");
+      lg->AddEntry(h_Error[it_y], "Stat. + Syst. Uncertainty", "f");
       lg->AddEntry(h_Fake[it_y], "MisId. Lepton background", "f");
       lg->AddEntry(h_Bundle[0][it_y], "W#pmW#pm", "f");
       lg->AddEntry(h_Bundle[1][it_y], "top", "f");
@@ -465,12 +503,18 @@ void makePlots_SSWW_SR_blind(){
       delete lg;
       delete lg2;
       //delete f_Data[it_y];
+      delete f_SSWWTypeI[it_y];
+      delete f_DYTypeI[it_y];
+      delete f_VBFTypeI[it_y];
       delete f_Fake[it_y];
       for(int it_mc=0; it_mc<MCNumber; it_mc++){
         delete f_MC[it_mc][it_y];
         delete h_MC[it_mc][it_y];
       }
       //delete h_Data[it_y];
+      delete h_SSWWTypeI[it_y];
+      delete h_DYTypeI[it_y];
+      delete h_VBFTypeI[it_y];
       delete h_Fake[it_y];
       delete h_Temp[it_y];
       delete h_Bundle[0][it_y];
