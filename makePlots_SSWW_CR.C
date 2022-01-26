@@ -4,20 +4,23 @@
 // root -b -l -q makePlots_SSWW.C
 
 TString workdir = "/data6/Users/jihkim/SKFlatOutput/";
-TString SKFlatVersion = "Run2Legacy_v4";
+TString SKFlatVersion = "Run2UltraLegacy_v2";
 TString skim = "SkimTree_Dilepton";
+TString skim2 = "SkimTree_HNMultiLep";
 TString analyzer = "SSWW";
 TString file_path = "";
-//vector<TString> year = {"2016", "2017", "2018"};
-vector<TString> year = {"2016"};
-//vector<TString> luminosity = {"35.9", "41.5", "59.7"};
-vector<TString> luminosity = {"35.9"};
-vector<TString> ZGname = {"ZGTo2LG", "ZGToLLG_01J", "ZGToLLG_01J"};
+//vector<TString> era = {"2016preVFP", "2016postVFP", "2017", "2018"};
+//vector<TString> era = {"2016preVFP", "2016postVFP"};
+vector<TString> era = {"2016"};
+//vector<TString> luminosity = {"19.5", "16.8", "41.5", "59.8"};
+vector<TString> luminosity = {"36.3"};
+//vector<TString> luminosity = {"19.5", "16.8"};
+//vector<TString> ZGname = {"ZGTo2LG", "ZGToLLG_01J", "ZGToLLG_01J"};
 //vector<TString> ZGname = {"ZGToLLG_01J"};
-vector<TString> WGname = {"WGToLNuG", "WGToLNuG_01J", "WGToLNuG_01J"};
+//vector<TString> WGname = {"WGToLNuG", "WGToLNuG_01J", "WGToLNuG_01J"};
 //vector<TString> WGname = {"WGToLNuG_01J"};
 
-const int MCNumber = 10; //JH
+const int MCNumber = 18; //JH
 int maxBinNumber_total = 0, maxBinNumber_temp = 0;
 double minRange = 0., maxRange = 0., binContent = 0., binError = 0., binError_Stat = 0., binError_Syst = 0.;
 double max_Data = 0., max_Background = 0., max_Hist = 0.;
@@ -68,16 +71,16 @@ void makePlots_SSWW_CR(){
     if(variable.Contains("TriLep")) txt_variable = "m(lll) (GeV)";
 
     // Declare variables needed for making plots 
-    TFile *f_Data[3], *f_Fake[3], *f_MC[MCNumber][3];
-    TH1D *h_Data[3], *h_Fake[3], *h_Temp[3], *h_Bundle[3][3], *h_MC[MCNumber][3], *h_Error[3], *h_Error_Background1[3], *h_Error_Background2[3], *h_Ratio[3];
+    TFile *f_Data[4], *f_Fake[4], *f_MC[MCNumber][4];
+    TH1D *h_Data[4], *h_Fake[4], *h_Temp[4], *h_Bundle[4][4], *h_MC[MCNumber][4], *h_Error[4], *h_Error_Background1[4], *h_Error_Background2[4], *h_Ratio[4];
     TCanvas *c1;
     TPad *c_up, *c_down;
     THStack *hs;
     TLegend *lg, *lg2;
 
-    // Year loop
-    for(int it_y=0; it_y<year.size(); it_y++){
-      file_path = SKFlatVersion+"/"+analyzer+"/"+year.at(it_y)+"/";
+    // Era loop
+    for(int it_y=0; it_y<era.size(); it_y++){
+      file_path = SKFlatVersion+"/"+analyzer+"/"+era.at(it_y)+"/"+"jcln_inv__fatjet_veto__/";
 
       // PDname in 2018 : DoubleEG -> EGamma
       if(channel.Contains("Electron")){
@@ -91,22 +94,32 @@ void makePlots_SSWW_CR(){
 
       // DATA, Fake
       f_Data[it_y]   = new TFile(workdir+file_path+"DATA/"+analyzer+"_"+skim+"_"+PDname+".root");
-      f_Fake[it_y]   = new TFile(workdir+file_path+"RunFake__/DATA/"+analyzer+"_"+skim+"_"+PDname+".root");
-      //MC : WpWp
-      f_MC[0][it_y]  = new TFile(workdir+file_path+analyzer+"_WpWp_EWK.root");
-      f_MC[1][it_y]  = new TFile(workdir+file_path+analyzer+"_WpWp_QCD.root");
-      // MC : top
-      f_MC[2][it_y]  = new TFile(workdir+file_path+analyzer+"_ttWToLNu.root");
-      f_MC[3][it_y]  = new TFile(workdir+file_path+analyzer+"_ttZToLLNuNu.root");
+      //f_Fake[it_y]   = new TFile(workdir+file_path+"RunFake__/DATA/"+analyzer+"_"+skim+"_"+PDname+".root");
+      //MC : WpWpJJ
+      f_MC[0][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim2+"_WpWpJJ_EWK.root");
+      f_MC[1][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim2+"_WpWpJJ_QCD.root");
+      // MC : ttV
+      f_MC[2][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim2+"_ttWToLNu.root");
+      f_MC[3][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim2+"_ttWToQQ.root");
+      f_MC[4][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim2+"_ttZToLLNuNu.root");
+      f_MC[5][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim2+"_ttZToQQ_ll.root");
+      f_MC[6][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim2+"_ttZToQQ.root");
       // MC : WZ
-      f_MC[4][it_y] = new TFile(workdir+file_path+analyzer+"_WZTo3LNu_powheg.root");
-      f_MC[5][it_y] = new TFile(workdir+file_path+analyzer+"_WZJJ_WToLNu.root");
+      f_MC[7][it_y] = new TFile(workdir+file_path+analyzer+"_"+skim2+"_WZTo3LNu_mll0p1_powheg.root");
+      //f_MC[7][it_y] = new TFile(workdir+file_path+analyzer+"_"+skim2+"_WZTo3LNu_mllmin4p0_powheg.root");
+      f_MC[8][it_y] = new TFile(workdir+file_path+analyzer+"_"+skim2+"_WZJJToLNu.root");
       // MC : ZZ
-      f_MC[6][it_y] = new TFile(workdir+file_path+analyzer+"_ZZTo4L_powheg.root");
-      f_MC[7][it_y] = new TFile(workdir+file_path+analyzer+"_ggZZTo2mu2tau.root");
-      f_MC[8][it_y] = new TFile(workdir+file_path+analyzer+"_ggZZTo4mu.root");
+      f_MC[9][it_y] = new TFile(workdir+file_path+analyzer+"_"+skim2+"_ZZTo4L_m_1toInf_powheg.root");
+      f_MC[10][it_y] = new TFile(workdir+file_path+analyzer+"_"+skim2+"_GluGluToZZto4mu.root");
+      f_MC[11][it_y] = new TFile(workdir+file_path+analyzer+"_"+skim2+"_GluGluToZZto4e.root");
+      f_MC[12][it_y] = new TFile(workdir+file_path+analyzer+"_"+skim2+"_GluGluToZZto2e2mu.root");
+      // MC : VVV
+      f_MC[13][it_y] = new TFile(workdir+file_path+analyzer+"_"+skim2+"_WWW.root");
+      f_MC[14][it_y] = new TFile(workdir+file_path+analyzer+"_"+skim2+"_WWZ.root");
+      f_MC[15][it_y] = new TFile(workdir+file_path+analyzer+"_"+skim2+"_WZZ.root");
+      f_MC[16][it_y] = new TFile(workdir+file_path+analyzer+"_"+skim2+"_ZZZ.root");
       // MC : tZq
-      f_MC[9][it_y] = new TFile(workdir+file_path+analyzer+"_tZq.root");
+      f_MC[17][it_y] = new TFile(workdir+file_path+analyzer+"_"+skim2+"_tZq.root");
 
       //=========================================
       //==== Get histograms
@@ -114,24 +127,23 @@ void makePlots_SSWW_CR(){
 
       // DATA, Fake
       h_Data[it_y]  = (TH1D*)f_Data[it_y]->Get(region+"/"+variable+"_"+IDname);
-      h_Fake[it_y]  = (TH1D*)f_Fake[it_y]->Get(region+"/"+variable+"_"+IDname);
+      //h_Fake[it_y]  = (TH1D*)f_Fake[it_y]->Get(region+"/"+variable+"_"+IDname);
       // MC
       for(int it_mc=0; it_mc<MCNumber; it_mc++){
         h_MC[it_mc][it_y] = (TH1D*)f_MC[it_mc][it_y]->Get(region+"/"+variable+"_"+IDname);
       }
 
       h_Data[it_y]->SetDirectory(0);
-      h_Fake[it_y]->SetDirectory(0);
+      //h_Fake[it_y]->SetDirectory(0);
+      //cout << "before SetDirectory;" << endl;
       for(int it_mc=0; it_mc<MCNumber; it_mc++){
         if(h_MC[it_mc][it_y]) h_MC[it_mc][it_y]->SetDirectory(0);
       }
-
       f_Data[it_y]->Close();
-      f_Fake[it_y]->Close();
+      //f_Fake[it_y]->Close();
       for(int it_mc=0; it_mc<MCNumber; it_mc++){
         f_MC[it_mc][it_y]->Close();
       }
-
       //=========================================
       //==== Make plots
       //=========================================
@@ -159,22 +171,30 @@ void makePlots_SSWW_CR(){
       c_up->cd();
 
       // Merge backgrounds
-      h_Bundle[0][it_y] = (TH1D*)h_Temp[it_y]->Clone(); //JH : WpWp
-      h_Bundle[1][it_y] = (TH1D*)h_Temp[it_y]->Clone(); //JH : top
+      h_Bundle[0][it_y] = (TH1D*)h_Temp[it_y]->Clone(); //JH : WpWpJJ
+      h_Bundle[1][it_y] = (TH1D*)h_Temp[it_y]->Clone(); //JH : ttV
       h_Bundle[2][it_y] = (TH1D*)h_Temp[it_y]->Clone(); //JH : WZ
       h_Bundle[3][it_y] = (TH1D*)h_Temp[it_y]->Clone(); //JH : ZZ
+      h_Bundle[4][it_y] = (TH1D*)h_Temp[it_y]->Clone(); //JH : VVV
       for(int it_mc=0; it_mc<=1; it_mc++){
         if(h_MC[it_mc][it_y]) h_Bundle[0][it_y]->Add(h_MC[it_mc][it_y]);
       }
-      for(int it_mc=2; it_mc<=3; it_mc++){
+      for(int it_mc=2; it_mc<=6; it_mc++){
         if(h_MC[it_mc][it_y]) h_Bundle[1][it_y]->Add(h_MC[it_mc][it_y]);
       }
-      for(int it_mc=4; it_mc<=5; it_mc++){
+      for(int it_mc=7; it_mc<=8; it_mc++){
         if(h_MC[it_mc][it_y]) h_Bundle[2][it_y]->Add(h_MC[it_mc][it_y]);
       }
-      for(int it_mc=6; it_mc<MCNumber; it_mc++){
+      for(int it_mc=9; it_mc<=12; it_mc++){
         if(h_MC[it_mc][it_y]) h_Bundle[3][it_y]->Add(h_MC[it_mc][it_y]);
       }
+      for(int it_mc=13; it_mc<=16; it_mc++){
+        if(h_MC[it_mc][it_y]) h_Bundle[4][it_y]->Add(h_MC[it_mc][it_y]);
+      }
+      //cout << "after SetDirectory;" << endl;
+      //for(int it_mc=0; it_mc<MCNumber; it_mc++){
+      //  cout << h_MC[it_mc][it_y] << endl;
+      //}
 
       int rebin, Nbin;
       double xbins_mjj[4] = {750., 1200., 1800., 3000.};
@@ -197,29 +217,29 @@ void makePlots_SSWW_CR(){
           Nbin = 4;
         }
         h_Data[it_y] = (TH1D*)h_Data[it_y]->Rebin(Nbin,"",mapbin[variable]);
-        h_Fake[it_y] = (TH1D*)h_Fake[it_y]->Rebin(Nbin,"",mapbin[variable]);
+        //h_Fake[it_y] = (TH1D*)h_Fake[it_y]->Rebin(Nbin,"",mapbin[variable]);
         h_Bundle[0][it_y] = (TH1D*)h_Bundle[0][it_y]->Rebin(Nbin,"",mapbin[variable]);
         h_Bundle[1][it_y] = (TH1D*)h_Bundle[1][it_y]->Rebin(Nbin,"",mapbin[variable]);
         h_Bundle[2][it_y] = (TH1D*)h_Bundle[2][it_y]->Rebin(Nbin,"",mapbin[variable]);
         h_Bundle[3][it_y] = (TH1D*)h_Bundle[3][it_y]->Rebin(Nbin,"",mapbin[variable]);
-        h_MC[9][it_y] = (TH1D*)h_MC[9][it_y]->Rebin(Nbin,"",mapbin[variable]);
+        h_Bundle[4][it_y] = (TH1D*)h_Bundle[4][it_y]->Rebin(Nbin,"",mapbin[variable]);
+        h_MC[17][it_y] = (TH1D*)h_MC[17][it_y]->Rebin(Nbin,"",mapbin[variable]);
         h_Temp[it_y] = (TH1D*)h_Temp[it_y]->Rebin(Nbin,"",mapbin[variable]);
-
         minBinNumber = 1;
         maxBinNumber = h_Data[it_y]->GetNbinsX();
       }
       else{
         rebin = rebin_str.Atoi();
         h_Data[it_y]->Rebin(rebin);
-        h_Fake[it_y]->Rebin(rebin);
+        //h_Fake[it_y]->Rebin(rebin);
         h_Bundle[0][it_y]->Rebin(rebin);
         h_Bundle[1][it_y]->Rebin(rebin);
         h_Bundle[2][it_y]->Rebin(rebin);
         h_Bundle[3][it_y]->Rebin(rebin);
-        h_MC[9][it_y]->Rebin(rebin);
+        h_Bundle[4][it_y]->Rebin(rebin);
+        h_MC[17][it_y]->Rebin(rebin);
         h_Temp[it_y]->Rebin(rebin);
       }
-
       maxBinNumber_total = h_Data[it_y]->GetNbinsX();  // This is needed for adding overflow bins
 
       // This is needed for drawing a line in the ratio plot
@@ -228,18 +248,19 @@ void makePlots_SSWW_CR(){
 
       // Fix overflows
       FixOverflows(h_Data[it_y], maxBinNumber, maxBinNumber_total);
-      FixOverflows(h_Fake[it_y], maxBinNumber, maxBinNumber_total);
+      //FixOverflows(h_Fake[it_y], maxBinNumber, maxBinNumber_total);
       FixOverflows(h_Bundle[0][it_y], maxBinNumber, maxBinNumber_total);
       FixOverflows(h_Bundle[1][it_y], maxBinNumber, maxBinNumber_total);
       FixOverflows(h_Bundle[2][it_y], maxBinNumber, maxBinNumber_total); //JH
       FixOverflows(h_Bundle[3][it_y], maxBinNumber, maxBinNumber_total); //JH
-      FixOverflows(h_MC[9][it_y], maxBinNumber, maxBinNumber_total);
+      FixOverflows(h_Bundle[4][it_y], maxBinNumber, maxBinNumber_total); //JH
+      FixOverflows(h_MC[17][it_y], maxBinNumber, maxBinNumber_total);
 
       // Stack & Draw MC
       hs = new THStack("hs", "");
-      h_Fake[it_y]->SetLineWidth(0);
-      h_Fake[it_y]->SetFillColor(kCyan-4);
-      hs->Add(h_Fake[it_y]);
+      //h_Fake[it_y]->SetLineWidth(0);
+      //h_Fake[it_y]->SetFillColor(kCyan-4);
+      //hs->Add(h_Fake[it_y]);
       h_Bundle[0][it_y]->SetLineWidth(0);
       h_Bundle[0][it_y]->SetFillColor(kPink+1);
       hs->Add(h_Bundle[0][it_y]);
@@ -252,9 +273,12 @@ void makePlots_SSWW_CR(){
       h_Bundle[3][it_y]->SetLineWidth(0);
       h_Bundle[3][it_y]->SetFillColor(kTeal+6);
       hs->Add(h_Bundle[3][it_y]);
-      h_MC[9][it_y]->SetLineWidth(0);
-      h_MC[9][it_y]->SetFillColor(kMagenta);
-      hs->Add(h_MC[9][it_y]);
+      h_Bundle[4][it_y]->SetLineWidth(0);
+      h_Bundle[4][it_y]->SetFillColor(kGreen-2);
+      hs->Add(h_Bundle[4][it_y]);
+      h_MC[17][it_y]->SetLineWidth(0);
+      h_MC[17][it_y]->SetFillColor(kMagenta);
+      hs->Add(h_MC[17][it_y]);
       hs->Draw("hist");
       hs->SetTitle("");
       hs->GetXaxis()->SetLabelSize(0.);
@@ -264,22 +288,22 @@ void makePlots_SSWW_CR(){
       hs->GetYaxis()->SetTitleSize(0.075);
       hs->GetYaxis()->SetTitleOffset(0.8);
       hs->GetXaxis()->SetRange(minBinNumber, maxBinNumber);
-
       // h_Error : A histogram for calcalating the total error of all backgrounds
       h_Error[it_y] = (TH1D*)h_Temp[it_y]->Clone();
-      if(h_Fake[it_y]) h_Error[it_y]->Add(h_Fake[it_y]);
+      //h_Error[it_y]->Add(h_Fake[it_y]);
       if(h_Bundle[0][it_y]) h_Error[it_y]->Add(h_Bundle[0][it_y]);
       if(h_Bundle[1][it_y]) h_Error[it_y]->Add(h_Bundle[1][it_y]);
       if(h_Bundle[2][it_y]) h_Error[it_y]->Add(h_Bundle[2][it_y]);
       if(h_Bundle[3][it_y]) h_Error[it_y]->Add(h_Bundle[3][it_y]);
-      if(h_MC[9][it_y]) h_Error[it_y]->Add(h_MC[9][it_y]);
+      if(h_Bundle[4][it_y]) h_Error[it_y]->Add(h_Bundle[4][it_y]);
+      if(h_MC[17][it_y]) h_Error[it_y]->Add(h_MC[17][it_y]);
 
       // Add systematic errors
       h_Error_Background1[it_y] = (TH1D*)h_Error[it_y]->Clone();  // Stat. + Syst. // Draw this first in the ratio plot
       h_Error_Background2[it_y] = (TH1D*)h_Error[it_y]->Clone();  // Stat. only
       for(int it_bin = minBinNumber; it_bin < maxBinNumber+1; it_bin++){
         binError_Stat = h_Error_Background1[it_y]->GetBinError(it_bin);
-        binError_Syst = h_Fake[it_y]->GetBinContent(it_bin)*0.3;
+        //binError_Syst = h_Fake[it_y]->GetBinContent(it_bin)*0.3;
         binError = sqrt(binError_Stat*binError_Stat + binError_Syst*binError_Syst);
         h_Error[it_y]->SetBinError(it_bin, binError);
       }
@@ -308,12 +332,13 @@ void makePlots_SSWW_CR(){
       lg = new TLegend(0.6, 0.45, 0.9, 0.85);
       lg->AddEntry(h_Error[it_y], "Stat. + Syst. Uncertainty", "f");
       lg->AddEntry(h_Data[it_y], "Data", "lep");
-      lg->AddEntry(h_Fake[it_y], "MisId. Lepton background", "f");
+      //lg->AddEntry(h_Fake[it_y], "MisId. Lepton background", "f");
       lg->AddEntry(h_Bundle[0][it_y], "W#pmW#pm", "f");
-      lg->AddEntry(h_Bundle[1][it_y], "top", "f");
+      lg->AddEntry(h_Bundle[1][it_y], "ttV", "f");
       lg->AddEntry(h_Bundle[2][it_y], "WZ", "f");
       lg->AddEntry(h_Bundle[3][it_y], "ZZ", "f");
-      lg->AddEntry(h_MC[9][it_y], "tZq", "f");
+      lg->AddEntry(h_Bundle[4][it_y], "VVV", "f");
+      lg->AddEntry(h_MC[17][it_y], "tZq", "f");
       lg->SetBorderSize(0);
       lg->SetTextSize(0.03);
       lg->SetFillStyle(1001);
@@ -359,7 +384,7 @@ void makePlots_SSWW_CR(){
       for(int it_bin = minBinNumber; it_bin < maxBinNumber+1; it_bin++){
         binContent = h_Error_Background1[it_y]->GetBinContent(it_bin);
         binError_Stat = h_Error_Background1[it_y]->GetBinError(it_bin);
-        binError_Syst = h_Fake[it_y]->GetBinContent(it_bin)*0.3;
+        //binError_Syst = h_Fake[it_y]->GetBinContent(it_bin)*0.3;
         binError  = sqrt(binError_Stat*binError_Stat + binError_Syst*binError_Syst);
         if(binContent != 0.){
           binError = binError/binContent;
@@ -429,7 +454,7 @@ void makePlots_SSWW_CR(){
       //==== Save plots
       //=========================================
       gSystem->Exec("mkdir -p plots_SSWW_CR/plots_SSWW_"+region);
-      c1->SaveAs("./plots_SSWW_CR/plots_SSWW_"+region+"/"+variable+"_"+IDname+"_"+year.at(it_y)+".png");
+      c1->SaveAs("./plots_SSWW_CR/plots_SSWW_"+region+"/"+variable+"_"+IDname+"_"+era.at(it_y)+".png");
 
       delete c_up;
       delete c_down;
@@ -441,13 +466,13 @@ void makePlots_SSWW_CR(){
       delete lg;
       delete lg2;
       delete f_Data[it_y];
-      delete f_Fake[it_y];
+      //delete f_Fake[it_y];
       for(int it_mc=0; it_mc<MCNumber; it_mc++){
         delete f_MC[it_mc][it_y];
         delete h_MC[it_mc][it_y];
       }
       delete h_Data[it_y];
-      delete h_Fake[it_y];
+      //delete h_Fake[it_y];
       delete h_Temp[it_y];
       delete h_Bundle[0][it_y];
       delete h_Bundle[1][it_y];
@@ -458,7 +483,7 @@ void makePlots_SSWW_CR(){
       delete h_Error_Background2[it_y];
       delete h_Ratio[it_y];
 
-    }  // year
+    }  // era
   }  // histline  
 }
 

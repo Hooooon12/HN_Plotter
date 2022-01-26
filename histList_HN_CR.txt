@@ -3,11 +3,11 @@ dimu	fakeCR1	Lep1_Eta	HN	5	1	10
 dimu	fakeCR1	Lep2_Pt	HN	10	2	12
 dimu	fakeCR1	Lep2_Eta	HN	5	1	10
 dimu	fakeCR1	MET	HN	10	1	20
-dimu	fakeCR1	Lep1_Pt	HN	10	2	12	FR_ex
-dimu	fakeCR1	Lep1_Eta	HN	5	1	10	FR_ex
-dimu	fakeCR1	Lep2_Pt	HN	10	2	12	FR_ex
-dimu	fakeCR1	Lep2_Eta	HN	5	1	10	FR_ex
-dimu	fakeCR1	MET	HN	10	1	20	FR_ex
+#dimu	fakeCR1	Lep1_Pt	HN	10	2	12	FR_ex
+#dimu	fakeCR1	Lep1_Eta	HN	5	1	10	FR_ex
+#dimu	fakeCR1	Lep2_Pt	HN	10	2	12	FR_ex
+#dimu	fakeCR1	Lep2_Eta	HN	5	1	10	FR_ex
+#dimu	fakeCR1	MET	HN	10	1	20	FR_ex
 ###############################################
 dimu	highCR1	Lep1_Pt	HN	10	2	12
 dimu	highCR1	Lep1_Eta	HN	5	1	10
@@ -16,13 +16,13 @@ dimu	highCR1	Lep2_Eta	HN	5	1	10
 dimu	highCR1	l1jj_Mass	HN	20	1	25
 dimu	highCR1	l2jj_Mass	HN	20	1	25
 dimu	highCR1	MET	HN	10	1	20
-dimu	highCR1	Lep1_Pt	HN	10	2	12	FR_ex
-dimu	highCR1	Lep1_Eta	HN	5	1	10	FR_ex
-dimu	highCR1	Lep2_Pt	HN	10	2	12	FR_ex
-dimu	highCR1	Lep2_Eta	HN	5	1	10	FR_ex
-dimu	highCR1	l1jj_Mass	HN	20	1	25	FR_ex
-dimu	highCR1	l2jj_Mass	HN	20	1	25	FR_ex
-dimu	highCR1	MET	HN	10	1	20	FR_ex
+#dimu	highCR1	Lep1_Pt	HN	10	2	12	FR_ex
+#dimu	highCR1	Lep1_Eta	HN	5	1	10	FR_ex
+#dimu	highCR1	Lep2_Pt	HN	10	2	12	FR_ex
+#dimu	highCR1	Lep2_Eta	HN	5	1	10	FR_ex
+#dimu	highCR1	l1jj_Mass	HN	20	1	25	FR_ex
+#dimu	highCR1	l2jj_Mass	HN	20	1	25	FR_ex
+#dimu	highCR1	MET	HN	10	1	20	FR_ex
 ###############################################
 dimu	highCR2	Lep1_Pt	HN	10	2	12
 dimu	highCR2	Lep1_Eta	HN	5	1	10
@@ -30,12 +30,12 @@ dimu	highCR2	Lep2_Pt	HN	10	2	12
 dimu	highCR2	Lep2_Eta	HN	5	1	10
 dimu	highCR2	Fatjet_Mass	HN	10	4	15
 dimu	highCR2	MET	HN	10	1	20
-dimu	highCR2	Lep1_Pt	HN	10	2	12	FR_ex
-dimu	highCR2	Lep1_Eta	HN	5	1	10	FR_ex
-dimu	highCR2	Lep2_Pt	HN	10	2	12	FR_ex
-dimu	highCR2	Lep2_Eta	HN	5	1	10	FR_ex
-dimu	highCR2	Fatjet_Mass	HN	10	4	15	FR_ex
-dimu	highCR2	MET	HN	10	1	20	FR_ex
+#dimu	highCR2	Lep1_Pt	HN	10	2	12	FR_ex
+#dimu	highCR2	Lep1_Eta	HN	5	1	10	FR_ex
+#dimu	highCR2	Lep2_Pt	HN	10	2	12	FR_ex
+#dimu	highCR2	Lep2_Eta	HN	5	1	10	FR_ex
+#dimu	highCR2	Fatjet_Mass	HN	10	4	15	FR_ex
+#dimu	highCR2	MET	HN	10	1	20	FR_ex
 ##############################################
 #dimu	fakeCR1	Lep1_Pt	HN2016	10	2	12
 #dimu	fakeCR1	Lep1_Eta	HN2016	5	1	10

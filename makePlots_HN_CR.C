@@ -4,20 +4,22 @@
 // root -b -l -q makePlots_SSWW.C
 
 TString workdir = "/data6/Users/jihkim/SKFlatOutput/";
-TString SKFlatVersion = "Run2Legacy_v4";
+TString SKFlatVersion = "Run2UltraLegacy_v2";
 TString skim = "SkimTree_Dilepton";
+TString skim2 = "SkimTree_HNMultiLep";
 TString analyzer = "Signal";
 TString file_path = "";
-//vector<TString> year = {"2016", "2017", "2018"};
-vector<TString> year = {"2016"};
-//vector<TString> luminosity = {"35.9", "41.5", "59.7"};
-vector<TString> luminosity = {"35.9"};
-vector<TString> ZGname = {"ZGTo2LG", "ZGToLLG_01J", "ZGToLLG_01J"};
+vector<TString> year = {"2016", "2017", "2018"};
+//vector<TString> year = {"2016"};
+vector<TString> luminosity = {"36.3", "41.5", "59.8"};
+//vector<TString> luminosity = {"36.3"};
+//vector<TString> ZGname = {"ZGTo2LG", "ZGToLLG_01J", "ZGToLLG_01J"};
 //vector<TString> ZGname = {"ZGToLLG_01J"};
-vector<TString> WGname = {"WGToLNuG", "WGToLNuG_01J", "WGToLNuG_01J"};
+//vector<TString> WGname = {"WGToLNuG", "WGToLNuG_01J", "WGToLNuG_01J"};
 //vector<TString> WGname = {"WGToLNuG_01J"};
 
-const int MCNumber = 16; //JH
+vector<int> MCNumber = {13, 16, 16};
+const int MCNumber_max = 16;
 int maxBinNumber_total = 0, maxBinNumber_temp = 0;
 double minRange = 0., maxRange = 0., binContent = 0., binError = 0., binError_Stat = 0., binError_Syst = 0.;
 double max_Data = 0., max_Background = 0., max_Hist = 0.;
@@ -72,8 +74,8 @@ void makePlots_HN_CR(){
     if(variable.Contains("Fatjet_Mass")) txt_variable = "m(J) (GeV)";
 
     // Declare variables needed for making plots 
-    TFile *f_Data[3], *f_Fake[3], *f_MC[MCNumber][3];
-    TH1D *h_Data[3], *h_Fake[3], *h_Temp[3], *h_Bundle[3][3], *h_MC[MCNumber][3], *h_Error[3], *h_Error_Background1[3], *h_Error_Background2[3], *h_Ratio[3];
+    TFile *f_Data[3], *f_Fake[3], *f_MC[MCNumber_max][3];
+    TH1D *h_Data[3], *h_Fake[3], *h_Temp[3], *h_Bundle[3][3], *h_MC[MCNumber_max][3], *h_Error[3], *h_Error_Background1[3], *h_Error_Background2[3], *h_Ratio[3];
     TCanvas *c1;
     TPad *c_up, *c_down;
     THStack *hs;
@@ -85,7 +87,7 @@ void makePlots_HN_CR(){
 
       // PDname in 2018 : DoubleEG -> EGamma
       if(channel.Contains("diel")){
-        if(it_y == 2) PDname = "EGamma";
+        if(year[it_y]=="2018") PDname = "EGamma";
         else PDname = "DoubleEG";
       }
 
@@ -97,27 +99,65 @@ void makePlots_HN_CR(){
       f_Data[it_y]   = new TFile(workdir+file_path+"DATA/"+analyzer+"_"+skim+"_"+PDname+".root");
       if(flag=="FR_ex") f_Fake[it_y] = new TFile(workdir+file_path+"RunFake__FR_ex__/DATA/"+analyzer+"_"+skim+"_"+PDname+".root"); //JH
       else f_Fake[it_y] = new TFile(workdir+file_path+"RunFake__/DATA/"+analyzer+"_"+skim+"_"+PDname+".root"); //JH
-      //MC : DoubleWW
-      f_MC[0][it_y]  = new TFile(workdir+file_path+analyzer+"_WpWp_EWK.root"); //JH
-      f_MC[1][it_y]  = new TFile(workdir+file_path+analyzer+"_WpWp_QCD.root");
-      f_MC[2][it_y]  = new TFile(workdir+file_path+analyzer+"_WWTo2L2Nu_DS.root");
+      //MC : WW
+      if(year[it_y]=="2016"){
+        f_MC[0][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim2+"_WpWpJJ_EWK.root"); //JH
+        f_MC[1][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim2+"_WpWpJJ_QCD.root");
+      }
+      else{
+        f_MC[0][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim2+"_WpWpJJ_EWK.root"); //JH
+        f_MC[1][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim2+"_WpWpJJ_QCD.root");
+        f_MC[2][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim2+"_WWTo2L2Nu_DS.root");
+      }
       // MC : top
-      f_MC[3][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim+"_ttHToNonbb.root");
-      f_MC[4][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim+"_ttWToLNu.root");
-      f_MC[5][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim+"_ttZToLLNuNu.root");
+      //f_MC[2][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim2+"_ttHToNonbb.root");
+      if(year[it_y]=="2016"){
+        f_MC[2][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim2+"_ttWToLNu.root");
+        f_MC[3][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim2+"_ttZToLLNuNu.root");
+        f_MC[4][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim2+"_SingleTop_tW_top_NoFullyHad.root");
+        f_MC[5][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim2+"_SingleTop_tW_antitop_NoFullyHad.root");
+      }
+      else{
+        f_MC[3][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim2+"_ttWToLNu.root");
+        f_MC[4][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim2+"_ttZToLLNuNu.root");
+        f_MC[5][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim2+"_SingleTop_tW_top_NoFullyHad.root");
+        f_MC[6][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim2+"_SingleTop_tW_antitop_NoFullyHad.root");
+      }
       // MC : VVV
-      f_MC[6][it_y] = new TFile(workdir+file_path+analyzer+"_WWW.root");
-      f_MC[7][it_y] = new TFile(workdir+file_path+analyzer+"_WWZ.root");
-      f_MC[8][it_y] = new TFile(workdir+file_path+analyzer+"_WZZ.root");
-      f_MC[9][it_y] = new TFile(workdir+file_path+analyzer+"_ZZZ.root");
+      if(year[it_y]=="2016"){
+        f_MC[6][it_y] = new TFile(workdir+file_path+analyzer+"_"+skim2+"_WWW.root");
+        f_MC[7][it_y] = new TFile(workdir+file_path+analyzer+"_"+skim2+"_WWZ.root");
+        f_MC[8][it_y] = new TFile(workdir+file_path+analyzer+"_"+skim2+"_WZZ.root");
+        f_MC[9][it_y] = new TFile(workdir+file_path+analyzer+"_"+skim2+"_ZZZ.root");
+      }
+      else{
+        f_MC[7][it_y] = new TFile(workdir+file_path+analyzer+"_"+skim2+"_WWW.root");
+        f_MC[8][it_y] = new TFile(workdir+file_path+analyzer+"_"+skim2+"_WWZ.root");
+        f_MC[9][it_y] = new TFile(workdir+file_path+analyzer+"_"+skim2+"_WZZ.root");
+        f_MC[10][it_y] = new TFile(workdir+file_path+analyzer+"_"+skim2+"_ZZZ.root");
+      }
       // MC : X+G
-      f_MC[10][it_y] = new TFile(workdir+file_path+analyzer+"_"+skim+"_TTG.root");
-      f_MC[11][it_y] = new TFile(workdir+file_path+analyzer+"_"+skim+"_"+ZGname.at(it_y)+".root");
-      f_MC[12][it_y] = new TFile(workdir+file_path+analyzer+"_"+skim+"_"+WGname.at(it_y)+".root");
-      f_MC[13][it_y] = new TFile(workdir+file_path+analyzer+"_TG.root");
+      if(year[it_y]=="2016"){
+        f_MC[10][it_y] = new TFile(workdir+file_path+analyzer+"_"+skim2+"_TTG.root");
+      }
+      else{
+        f_MC[11][it_y] = new TFile(workdir+file_path+analyzer+"_"+skim2+"_TTG.root");
+        f_MC[12][it_y] = new TFile(workdir+file_path+analyzer+"_"+skim2+"_ZGTo2LG_01J.root");
+        f_MC[13][it_y] = new TFile(workdir+file_path+analyzer+"_"+skim2+"_WGToLNuG.root");
+      }
+      //f_MC[13][it_y] = new TFile(workdir+file_path+analyzer+"_"+skim2+"_TG.root"); //JH : contains only negative events
       // MC : VV
-      f_MC[14][it_y] = new TFile(workdir+file_path+analyzer+"_"+skim+"_WZTo3LNu_powheg.root");
-      f_MC[15][it_y] = new TFile(workdir+file_path+analyzer+"_"+skim+"_ZZTo4L_powheg.root");
+      if(year[it_y]=="2016"){
+        //f_MC[11][it_y] = new TFile(workdir+file_path+analyzer+"_"+skim2+"_WZTo3LNu_mll0p1_powheg.root");
+        f_MC[11][it_y] = new TFile(workdir+file_path+analyzer+"_"+skim2+"_WZTo3LNu_mllmin4p0_powheg.root");
+        f_MC[12][it_y] = new TFile(workdir+file_path+analyzer+"_"+skim2+"_ZZTo4L_m_1toInf_powheg.root");
+      }
+      else{
+        //f_MC[11][it_y] = new TFile(workdir+file_path+analyzer+"_"+skim2+"_WZTo3LNu_mll0p1_powheg.root");
+        f_MC[14][it_y] = new TFile(workdir+file_path+analyzer+"_"+skim2+"_WZTo3LNu_mllmin4p0_powheg.root");
+        f_MC[15][it_y] = new TFile(workdir+file_path+analyzer+"_"+skim2+"_ZZTo4L_powheg.root");
+        //f_MC[12][it_y] = new TFile(workdir+file_path+analyzer+"_"+skim2+"_ZZTo4L_m_1toInf_powheg.root");
+      }
 
       //=========================================
       //==== Get histograms
@@ -127,19 +167,19 @@ void makePlots_HN_CR(){
       h_Data[it_y]  = (TH1D*)f_Data[it_y]->Get(channel+"/"+region+"/"+variable+"_"+IDname);
       h_Fake[it_y]  = (TH1D*)f_Fake[it_y]->Get(channel+"/"+region+"/"+variable+"_"+IDname);
       // MC
-      for(int it_mc=0; it_mc<MCNumber; it_mc++){
+      for(int it_mc=0; it_mc<MCNumber[it_y]; it_mc++){
         h_MC[it_mc][it_y] = (TH1D*)f_MC[it_mc][it_y]->Get(channel+"/"+region+"/"+variable+"_"+IDname);
       }
 
       h_Data[it_y]->SetDirectory(0);
       h_Fake[it_y]->SetDirectory(0);
-      for(int it_mc=0; it_mc<MCNumber; it_mc++){
+      for(int it_mc=0; it_mc<MCNumber[it_y]; it_mc++){
         if(h_MC[it_mc][it_y]) h_MC[it_mc][it_y]->SetDirectory(0);
       }
 
       f_Data[it_y]->Close();
       f_Fake[it_y]->Close();
-      for(int it_mc=0; it_mc<MCNumber; it_mc++){
+      for(int it_mc=0; it_mc<MCNumber[it_y]; it_mc++){
         f_MC[it_mc][it_y]->Close();
       }
 
@@ -170,25 +210,44 @@ void makePlots_HN_CR(){
       c_up->cd();
 
       // Merge backgrounds
-      h_Bundle[0][it_y] = (TH1D*)h_Temp[it_y]->Clone(); //JH : DoubleWW
+      h_Bundle[0][it_y] = (TH1D*)h_Temp[it_y]->Clone(); //JH : WW
       h_Bundle[1][it_y] = (TH1D*)h_Temp[it_y]->Clone(); //JH : top
       h_Bundle[2][it_y] = (TH1D*)h_Temp[it_y]->Clone(); //JH : VVV
       h_Bundle[3][it_y] = (TH1D*)h_Temp[it_y]->Clone(); //JH : X+G
       h_Bundle[4][it_y] = (TH1D*)h_Temp[it_y]->Clone(); //JH : VV
-      for(int it_mc=0; it_mc<=2; it_mc++){
-        if(h_MC[it_mc][it_y]) h_Bundle[0][it_y]->Add(h_MC[it_mc][it_y]);
+      if(year[it_y]=="2016"){
+        for(int it_mc=0; it_mc<=1; it_mc++){
+          if(h_MC[it_mc][it_y]) h_Bundle[0][it_y]->Add(h_MC[it_mc][it_y]);
+        }
+        for(int it_mc=2; it_mc<=5; it_mc++){
+          if(h_MC[it_mc][it_y]) h_Bundle[1][it_y]->Add(h_MC[it_mc][it_y]);
+        }
+        for(int it_mc=6; it_mc<=9; it_mc++){
+          if(h_MC[it_mc][it_y]) h_Bundle[2][it_y]->Add(h_MC[it_mc][it_y]);
+        }
+        for(int it_mc=10; it_mc<=10; it_mc++){
+          if(h_MC[it_mc][it_y]) h_Bundle[3][it_y]->Add(h_MC[it_mc][it_y]);
+        }
+        for(int it_mc=11; it_mc<MCNumber[it_y]; it_mc++){
+          if(h_MC[it_mc][it_y]) h_Bundle[4][it_y]->Add(h_MC[it_mc][it_y]);
+        }
       }
-      for(int it_mc=3; it_mc<=5; it_mc++){
-        if(h_MC[it_mc][it_y]) h_Bundle[1][it_y]->Add(h_MC[it_mc][it_y]);
-      }
-      for(int it_mc=6; it_mc<=9; it_mc++){
-        if(h_MC[it_mc][it_y]) h_Bundle[2][it_y]->Add(h_MC[it_mc][it_y]);
-      }
-      for(int it_mc=10; it_mc<=13; it_mc++){
-        if(h_MC[it_mc][it_y]) h_Bundle[3][it_y]->Add(h_MC[it_mc][it_y]);
-      }
-      for(int it_mc=14; it_mc<MCNumber; it_mc++){
-        if(h_MC[it_mc][it_y]) h_Bundle[4][it_y]->Add(h_MC[it_mc][it_y]);
+      else{
+        for(int it_mc=0; it_mc<=2; it_mc++){
+          if(h_MC[it_mc][it_y]) h_Bundle[0][it_y]->Add(h_MC[it_mc][it_y]);
+        }
+        for(int it_mc=3; it_mc<=6; it_mc++){
+          if(h_MC[it_mc][it_y]) h_Bundle[1][it_y]->Add(h_MC[it_mc][it_y]);
+        }
+        for(int it_mc=7; it_mc<=10; it_mc++){
+          if(h_MC[it_mc][it_y]) h_Bundle[2][it_y]->Add(h_MC[it_mc][it_y]);
+        }
+        for(int it_mc=11; it_mc<=13; it_mc++){
+          if(h_MC[it_mc][it_y]) h_Bundle[3][it_y]->Add(h_MC[it_mc][it_y]);
+        }
+        for(int it_mc=14; it_mc<MCNumber[it_y]; it_mc++){
+          if(h_MC[it_mc][it_y]) h_Bundle[4][it_y]->Add(h_MC[it_mc][it_y]);
+        }
       }
 
       // Rebin
@@ -308,10 +367,10 @@ void makePlots_HN_CR(){
       else lg = new TLegend(0.6, 0.45, 0.9, 0.85);
       lg->AddEntry(h_Error[it_y], "Stat. + Syst. Uncertainty", "f");
       lg->AddEntry(h_Data[it_y], "Data", "lep");
-      lg->AddEntry(h_Bundle[0][it_y], "DoubleWW", "f");
+      lg->AddEntry(h_Bundle[0][it_y], "WW", "f");
       lg->AddEntry(h_Bundle[1][it_y], "top", "f");
       lg->AddEntry(h_Bundle[2][it_y], "VVV", "f");
-      lg->AddEntry(h_Bundle[3][it_y], "X+G", "f");
+      lg->AddEntry(h_Bundle[3][it_y], "ttG", "f");
       lg->AddEntry(h_Bundle[4][it_y], "VV", "f");
       lg->AddEntry(h_Fake[it_y], "MisId. Lepton background", "f");
       //lg->AddEntry(h_MC[2][it_y], "Z#gamma", "f");
@@ -431,9 +490,9 @@ void makePlots_HN_CR(){
       //=========================================
       //==== Save plots
       //=========================================
-      gSystem->Exec("mkdir -p plots_HN_CR/plots_HN_"+region);
-      if(flag=="FR_ex") c1->SaveAs("./plots_HN_CR/plots_HN_"+region+"/"+variable+"_"+IDname+"_"+year.at(it_y)+"_FRex.png");
-      else c1->SaveAs("./plots_HN_CR/plots_HN_"+region+"/"+variable+"_"+IDname+"_"+year.at(it_y)+".png");
+      gSystem->Exec("mkdir -p plots_HN_CR/"+year.at(it_y)+"/plots_HN_"+region);
+      if(flag=="FR_ex") c1->SaveAs("./plots_HN_CR/"+year.at(it_y)+"/plots_HN_"+region+"/"+variable+"_"+IDname+"_"+year.at(it_y)+"_FRex.png");
+      else c1->SaveAs("./plots_HN_CR/"+year.at(it_y)+"/plots_HN_"+region+"/"+variable+"_"+IDname+"_"+year.at(it_y)+".png");
 
       delete c_up;
       delete c_down;
@@ -446,7 +505,7 @@ void makePlots_HN_CR(){
       delete lg2;
       delete f_Data[it_y];
       delete f_Fake[it_y];
-      for(int it_mc=0; it_mc<MCNumber; it_mc++){
+      for(int it_mc=0; it_mc<MCNumber[it_y]; it_mc++){
         delete f_MC[it_mc][it_y];
         delete h_MC[it_mc][it_y];
       }

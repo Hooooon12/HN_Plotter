@@ -9,26 +9,29 @@ TString skim = "SkimTree_Dilepton";
 TString skim2 = "SkimTree_HNMultiLep";
 TString analyzer = "Control";
 TString file_path = "";
-//vector<TString> year = {"2016", "2017", "2018"};
-vector<TString> year = {"2016"};
-//vector<TString> luminosity = {"36.3", "41.5", "59.8"};
-vector<TString> luminosity = {"36.3"};
+vector<TString> year = {"2016", "2017", "2018"};
+//vector<TString> year = {"2016", "2017"};
+//vector<TString> year = {"2016"};
+vector<TString> luminosity = {"36.3", "41.5", "59.8"};
+//vector<TString> luminosity = {"36.3", "41.5"};
+//vector<TString> luminosity = {"36.3"};
 //vector<TString> ZGname = {"ZGTo2LG", "ZGToLLG_01J", "ZGToLLG_01J"};
 //vector<TString> ZGname = {"ZGToLLG_01J"};
 //vector<TString> WGname = {"WGToLNuG", "WGToLNuG_01J", "WGToLNuG_01J"};
 //vector<TString> WGname = {"WGToLNuG_01J"};
 
-const int MCNumber = 7; //JH
+vector<int> MCNumber = {14, 20, 20};
+const int MCNumber_max = 20;
 int maxBinNumber_total = 0, maxBinNumber_temp = 0;
 double minRange = 0., maxRange = 0., binContent = 0., binError = 0., binError_Stat = 0., binError_Syst = 0.;
 double max_Data = 0., max_Background = 0., max_Hist = 0.;
 
 void FixOverflows(TH1D *hist, int maxBin, int maxBin_total);
 
-void makePlots_HN_ZZ(){
+void makePlots_HN_SM(){
 
   string histline;
-  ifstream in("histList_HN_ZZ.txt");
+  ifstream in("histList_HN_SM.txt");
   // Line loop
   while(getline(in, histline)){
     std::istringstream is(histline);
@@ -62,15 +65,16 @@ void makePlots_HN_ZZ(){
     if(variable.Contains("Lep1_Pt")) txt_variable = "p_{T}(l_{1}) (GeV)";
     if(variable.Contains("Lep2_Pt")) txt_variable = "p_{T}(l_{2}) (GeV)";
     if(variable.Contains("Lep3_Pt")) txt_variable = "p_{T}(l_{3}) (GeV)";
-    if(variable.Contains("Lep4_Pt")) txt_variable = "p_{T}(l_{4}) (GeV)";
     if(variable.Contains("Lep1_Eta")) txt_variable = "#eta(l_{1})";
     if(variable.Contains("Lep2_Eta")) txt_variable = "#eta(l_{2})";
     if(variable.Contains("Lep3_Eta")) txt_variable = "#eta(l_{3})";
-    if(variable.Contains("Lep4_Eta")) txt_variable = "#eta(l_{4})";
+    if(variable.Contains("ZtagLep1_Pt")) txt_variable = "Leading Z-tagged Lepton p_{T} (GeV)";
+    if(variable.Contains("ZtagLep2_Pt")) txt_variable = "Subleading Z-tagged Lepton p_{T} (GeV)";
+    if(variable.Contains("WtagLep_Pt")) txt_variable = "W-tagged Lepton p_{T} (GeV)";
+    if(variable.Contains("Mt")) txt_variable = "M_{T}(l,#slash{E}_{T}^{miss}) (GeV)";
     if(variable.Contains("MET")) txt_variable = "#slash{E}_{T}^{miss} (GeV)";
     if(variable.Contains("MET2ST")) txt_variable = "(#slash{E}_{T}^{miss})^{2}/S_{T} (GeV)";
-    if(variable.Contains("ZCand1")) txt_variable = "m(ll)_{1} (GeV)";
-    if(variable.Contains("ZCand2")) txt_variable = "m(ll)_{2} (GeV)";
+    if(variable.Contains("ZCand")) txt_variable = "m(ll) (GeV)";
     if(variable.Contains("TriLep")) txt_variable = "m(lll) (GeV)";
     if(variable.Contains("l1jj_Mass")) txt_variable = "m(l_{1}jj) (GeV)";
     if(variable.Contains("l2jj_Mass")) txt_variable = "m(l_{2}jj) (GeV)";
@@ -79,8 +83,8 @@ void makePlots_HN_ZZ(){
     if(variable.Contains("Fatjet_Mass")) txt_variable = "m(J) (GeV)";
 
     // Declare variables needed for making plots 
-    TFile *f_Data[3], *f_Fake[3], *f_MC[MCNumber][3];
-    TH1D *h_Data[3], *h_Fake[3], *h_Temp[3], *h_Bundle[3][3], *h_MC[MCNumber][3], *h_Error[3], *h_Error_Background1[3], *h_Error_Background2[3], *h_Ratio[3];
+    TFile *f_Data[3], *f_Fake[3], *f_MC[MCNumber_max][3];
+    TH1D *h_Data[3], *h_Fake[3], *h_Temp[3], *h_Bundle[3][3], *h_MC[MCNumber_max][3], *h_Error[3], *h_Error_Background1[3], *h_Error_Background2[3], *h_Ratio[3];
     TCanvas *c1;
     TPad *c_up, *c_down;
     THStack *hs;
@@ -92,7 +96,7 @@ void makePlots_HN_ZZ(){
 
       // PDname in 2018 : DoubleEG -> EGamma
       if(channel.Contains("ee")){
-        if(it_y == 2) PDname = "EGamma";
+        if(year[it_y]=="2018") PDname = "EGamma";
         else PDname = "DoubleEG";
       }
 
@@ -104,60 +108,103 @@ void makePlots_HN_ZZ(){
       f_Data[it_y]   = new TFile(workdir+file_path+"DATA/"+analyzer+"_"+skim+"_"+PDname+".root");
       if(flag=="FR_ex") f_Fake[it_y] = new TFile(workdir+file_path+"RunFake__FR_ex__/DATA/"+analyzer+"_"+skim+"_"+PDname+".root"); //JH
       else f_Fake[it_y] = new TFile(workdir+file_path+"RunFake__/DATA/"+analyzer+"_"+skim+"_"+PDname+".root"); //JH
-      //MC : ZZ
-      f_MC[0][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim2+"_ZZTo4L_m_1toInf_powheg.root");
-      //f_MC[2][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim2+"_"+ZGname.at(it_y)+".root");
-      //f_MC[3][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim2+"_"+WGname.at(it_y)+".root"); //JH : WG has no entry in WZ CR
-      // MC : GluGluToZZto4L
-      //f_MC[15][it_y] = new TFile(workdir+file_path+analyzer+"_ggZZTo2e2mu.root");
-      //f_MC[16][it_y] = new TFile(workdir+file_path+analyzer+"_ggZZTo2e2tau.root");
-      //f_MC[1][it_y] = new TFile(workdir+file_path+analyzer+"_ggZZTo2mu2tau.root");
-      //f_MC[18][it_y] = new TFile(workdir+file_path+analyzer+"_ggZZTo4e.root");
-      f_MC[1][it_y] = new TFile(workdir+file_path+analyzer+"_"+skim2+"_GluGluToZZto4mu.root");
-      //f_MC[20][it_y] = new TFile(workdir+file_path+analyzer+"_ggZZTo4tau.root");
+      //MC : separate MC (major processes)
+      if(year[it_y]=="2016"){
+        //f_MC[0][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim2+"_WZTo3LNu_mll0p1_powheg.root"); //JH : too many MC events...
+        f_MC[0][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim2+"_WZTo3LNu_mllmin4p0_powheg.root"); //WZ
+        f_MC[1][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim2+"_ZZTo4L_m_1toInf_powheg.root"); //ZZ
+        f_MC[2][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim2+"_DYJets.root"); //DYJets
+        f_MC[3][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim2+"_TTLL_powheg.root"); //TTLL
+      }
+      else{
+        //f_MC[0][it_y]  = new TFile(workdir+file_path+analyzer+"_WZTo3LNu_mll0p1_powheg.root"); //JH : too many MC events...
+        f_MC[0][it_y]  = new TFile(workdir+file_path+analyzer+"_WZTo3LNu_mllmin4p0_powheg.root"); //WZ
+        //f_MC[1][it_y]  = new TFile(workdir+file_path+analyzer+"_ZZTo4L_m_1toInf_powheg.root"); //ZZ
+        f_MC[1][it_y]  = new TFile(workdir+file_path+analyzer+"_ZZTo4L_powheg.root"); //ZZ
+        f_MC[2][it_y]  = new TFile(workdir+file_path+analyzer+"_ZGTo2LG_01J.root"); //ZG
+        f_MC[3][it_y]  = new TFile(workdir+file_path+analyzer+"_WGToLNuG.root"); //WG
+        f_MC[4][it_y]  = new TFile(workdir+file_path+analyzer+"_WWTo2L2Nu_powheg.root"); //WW
+        f_MC[5][it_y]  = new TFile(workdir+file_path+analyzer+"_DYJets.root"); //DYJets
+        f_MC[6][it_y]  = new TFile(workdir+file_path+analyzer+"_TTLL_powheg.root"); //TTLL
+      }
+      // MC : top
+      if(year[it_y]=="2016"){
+        f_MC[4][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim2+"_TTG.root"); //JH
+      }
+      else{
+        f_MC[7][it_y]  = new TFile(workdir+file_path+analyzer+"_TTG.root"); //JH
+        f_MC[8][it_y]  = new TFile(workdir+file_path+analyzer+"_TG.root");
+        f_MC[9][it_y]  = new TFile(workdir+file_path+analyzer+"_SingleTop_tW_antitop_NoFullyHad.root");
+        f_MC[10][it_y]  = new TFile(workdir+file_path+analyzer+"_SingleTop_tW_top_NoFullyHad.root");
+      }
       // MC : VVV
-      //f_MC[3][it_y]  = new TFile(workdir+file_path+analyzer+"_WWW.root");
-      f_MC[2][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim2+"_WWZ.root");
-      f_MC[3][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim2+"_WZZ.root");
-      f_MC[4][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim2+"_ZZZ.root"); //JH
+      if(year[it_y]=="2016"){
+        f_MC[5][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim2+"_WWW.root");
+        f_MC[6][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim2+"_WWZ.root");
+        f_MC[7][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim2+"_WZZ.root");
+        f_MC[8][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim2+"_ZZZ.root"); //JH
+      }
+      else{
+        f_MC[11][it_y]  = new TFile(workdir+file_path+analyzer+"_WWW.root");
+        f_MC[12][it_y]  = new TFile(workdir+file_path+analyzer+"_WWZ.root");
+        f_MC[13][it_y]  = new TFile(workdir+file_path+analyzer+"_WZZ.root");
+        f_MC[14][it_y]  = new TFile(workdir+file_path+analyzer+"_ZZZ.root"); //JH
+      }
       // MC : ttV
-      //f_MC[9][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim2+"_ttWToLNu.root");
-      f_MC[5][it_y] = new TFile(workdir+file_path+analyzer+"_"+skim2+"_ttZToLLNuNu.root");
-      //f_MC[7][it_y] = new TFile(workdir+file_path+analyzer+"_"+skim2+"_ttHToNonbb.root");
+      if(year[it_y]=="2016"){
+        f_MC[9][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim2+"_ttWToLNu.root");
+        f_MC[10][it_y] = new TFile(workdir+file_path+analyzer+"_"+skim2+"_ttZToLLNuNu.root");
+      }
+      else{
+        f_MC[15][it_y]  = new TFile(workdir+file_path+analyzer+"_ttWToLNu.root");
+        f_MC[16][it_y] = new TFile(workdir+file_path+analyzer+"_ttZToLLNuNu.root");
+      }
+      //f_MC[11][it_y] = new TFile(workdir+file_path+analyzer+"_"+skim2+"_ttHToNonbb.root");
       // MC : Higgs
       //f_MC[12][it_y] = new TFile(workdir+file_path+analyzer+"_ggHToZZTo4L.root");
       //f_MC[13][it_y] = new TFile(workdir+file_path+analyzer+"_VBF_HToZZTo4L.root");
-      f_MC[6][it_y] = new TFile(workdir+file_path+analyzer+"_"+skim2+"_VHToNonbb.root");
+      //f_MC[14][it_y] = new TFile(workdir+file_path+analyzer+"_VHToNonbb.root");
+      // MC : GluGluToZZto4L
+      if(year[it_y]=="2016"){
+        f_MC[11][it_y] = new TFile(workdir+file_path+analyzer+"_"+skim2+"_GluGluToZZto4mu.root");
+        f_MC[12][it_y] = new TFile(workdir+file_path+analyzer+"_"+skim2+"_GluGluToZZto4e.root");
+        f_MC[13][it_y] = new TFile(workdir+file_path+analyzer+"_"+skim2+"_GluGluToZZto2e2mu.root");
+      }
+      else{
+        f_MC[17][it_y] = new TFile(workdir+file_path+analyzer+"_GluGluToZZto4mu.root");
+        f_MC[18][it_y] = new TFile(workdir+file_path+analyzer+"_GluGluToZZto4e.root");
+        f_MC[19][it_y] = new TFile(workdir+file_path+analyzer+"_GluGluToZZto2e2mu.root");
+      }
 
       //=========================================
       //==== Get histograms
       //=========================================
 
       // DATA, Fake, MC
-      if(channel == "tot"){
+      if(channel=="tot"||region.Contains("DY")||region.Contains("TT")){
         h_Data[it_y]  = (TH1D*)f_Data[it_y]->Get(region+"/"+variable+"_"+IDname);
         h_Fake[it_y]  = (TH1D*)f_Fake[it_y]->Get(region+"/"+variable+"_"+IDname);
-        for(int it_mc=0; it_mc<MCNumber; it_mc++){
+        for(int it_mc=0; it_mc<MCNumber[it_y]; it_mc++){
           h_MC[it_mc][it_y] = (TH1D*)f_MC[it_mc][it_y]->Get(region+"/"+variable+"_"+IDname);
         }
       }
       else{
         h_Data[it_y]  = (TH1D*)f_Data[it_y]->Get(region+"/"+channel+"/"+variable+"_"+IDname);
         h_Fake[it_y]  = (TH1D*)f_Fake[it_y]->Get(region+"/"+channel+"/"+variable+"_"+IDname);
-        for(int it_mc=0; it_mc<MCNumber; it_mc++){
+        for(int it_mc=0; it_mc<MCNumber[it_y]; it_mc++){
           h_MC[it_mc][it_y] = (TH1D*)f_MC[it_mc][it_y]->Get(region+"/"+channel+"/"+variable+"_"+IDname);
         }
       }
 
       h_Data[it_y]->SetDirectory(0);
       h_Fake[it_y]->SetDirectory(0);
-      for(int it_mc=0; it_mc<MCNumber; it_mc++){
+      for(int it_mc=0; it_mc<MCNumber[it_y]; it_mc++){
         if(h_MC[it_mc][it_y]) h_MC[it_mc][it_y]->SetDirectory(0);
       }
 
       f_Data[it_y]->Close();
       f_Fake[it_y]->Close();
-      for(int it_mc=0; it_mc<MCNumber; it_mc++){
+      for(int it_mc=0; it_mc<MCNumber[it_y]; it_mc++){
         f_MC[it_mc][it_y]->Close();
       }
 
@@ -188,19 +235,70 @@ void makePlots_HN_ZZ(){
       c_up->cd();
 
       // Merge backgrounds
-      h_Bundle[0][it_y] = (TH1D*)h_Temp[it_y]->Clone(); //JH : VVV
-      for(int it_mc=2; it_mc<=4; it_mc++){
-        if(h_MC[it_mc][it_y]) h_Bundle[0][it_y]->Add(h_MC[it_mc][it_y]);
+      h_Bundle[0][it_y] = (TH1D*)h_Temp[it_y]->Clone(); //JH : top
+      h_Bundle[1][it_y] = (TH1D*)h_Temp[it_y]->Clone(); //JH : VVV
+      h_Bundle[2][it_y] = (TH1D*)h_Temp[it_y]->Clone(); //JH : ttV
+      h_Bundle[3][it_y] = (TH1D*)h_Temp[it_y]->Clone(); //JH : ggZZ
+
+      // Remove overlapped physical processes (DY~ZG, TT~TTG) //JH : what about singletop vs TG?
+      if(region.Contains("DY")||region.Contains("TT")){
+        if(year[it_y]=="2016") h_MC[4][it_y] = 0;
+        else{
+          h_MC[2][it_y] = 0;
+          h_MC[7][it_y] = 0;
+        }
+      }
+      else{
+        if(year[it_y]=="2016"){
+          h_MC[2][it_y] = 0;
+          h_MC[3][it_y] = 0;
+        }
+        else{
+          h_MC[5][it_y] = 0;
+          h_MC[6][it_y] = 0;
+        }
+      }
+
+      // Make MC bundles
+      if(year[it_y]=="2016"){      
+        for(int it_mc=4; it_mc<=4; it_mc++){
+          if(h_MC[it_mc][it_y]) h_Bundle[0][it_y]->Add(h_MC[it_mc][it_y]);
+        }
+        for(int it_mc=5; it_mc<=8; it_mc++){
+          if(h_MC[it_mc][it_y]) h_Bundle[1][it_y]->Add(h_MC[it_mc][it_y]);
+        }
+        for(int it_mc=9; it_mc<=10; it_mc++){
+          if(h_MC[it_mc][it_y]) h_Bundle[2][it_y]->Add(h_MC[it_mc][it_y]);
+        }
+        for(int it_mc=11; it_mc<MCNumber[it_y]; it_mc++){
+          if(h_MC[it_mc][it_y]) h_Bundle[3][it_y]->Add(h_MC[it_mc][it_y]);
+        }
+      }
+      else{
+        for(int it_mc=7; it_mc<=10; it_mc++){
+          if(h_MC[it_mc][it_y]) h_Bundle[0][it_y]->Add(h_MC[it_mc][it_y]);
+        }
+        for(int it_mc=11; it_mc<=14; it_mc++){
+          if(h_MC[it_mc][it_y]) h_Bundle[1][it_y]->Add(h_MC[it_mc][it_y]);
+        }
+        for(int it_mc=15; it_mc<=16; it_mc++){
+          if(h_MC[it_mc][it_y]) h_Bundle[2][it_y]->Add(h_MC[it_mc][it_y]);
+        }
+        for(int it_mc=17; it_mc<MCNumber[it_y]; it_mc++){
+          if(h_MC[it_mc][it_y]) h_Bundle[3][it_y]->Add(h_MC[it_mc][it_y]);
+        }
       }
 
       // Rebin
       h_Data[it_y]->Rebin(rebin);
       h_Fake[it_y]->Rebin(rebin);
-      h_MC[0][it_y]->Rebin(rebin);
-      h_MC[1][it_y]->Rebin(rebin);
-      h_MC[5][it_y]->Rebin(rebin);
-      h_MC[6][it_y]->Rebin(rebin);
-      h_Bundle[0][it_y]->Rebin(rebin);
+      for(int it_mc=0; it_mc<MCNumber[it_y]; it_mc++){
+        if(h_MC[it_mc][it_y]) h_MC[it_mc][it_y]->Rebin(rebin);
+      }
+      if(h_Bundle[0][it_y]) h_Bundle[0][it_y]->Rebin(rebin);
+      if(h_Bundle[1][it_y]) h_Bundle[1][it_y]->Rebin(rebin);
+      if(h_Bundle[2][it_y]) h_Bundle[2][it_y]->Rebin(rebin);
+      if(h_Bundle[3][it_y]) h_Bundle[3][it_y]->Rebin(rebin);
       h_Temp[it_y]->Rebin(rebin);
 
       maxBinNumber_total = h_Data[it_y]->GetNbinsX();  // This is needed for adding overflow bins
@@ -212,29 +310,65 @@ void makePlots_HN_ZZ(){
       // Fix overflows
       FixOverflows(h_Data[it_y], maxBinNumber, maxBinNumber_total);
       FixOverflows(h_Fake[it_y], maxBinNumber, maxBinNumber_total);
-      FixOverflows(h_MC[0][it_y], maxBinNumber, maxBinNumber_total);
-      FixOverflows(h_MC[1][it_y], maxBinNumber, maxBinNumber_total);
-      FixOverflows(h_MC[5][it_y], maxBinNumber, maxBinNumber_total);
-      FixOverflows(h_MC[6][it_y], maxBinNumber, maxBinNumber_total);
-      FixOverflows(h_Bundle[0][it_y], maxBinNumber, maxBinNumber_total);
+      for(int it_mc=0; it_mc<MCNumber[it_y]; it_mc++){
+        if(h_MC[it_mc][it_y]) FixOverflows(h_MC[it_mc][it_y], maxBinNumber, maxBinNumber_total);
+      }
+      if(h_Bundle[0][it_y]) FixOverflows(h_Bundle[0][it_y], maxBinNumber, maxBinNumber_total);
+      if(h_Bundle[1][it_y]) FixOverflows(h_Bundle[1][it_y], maxBinNumber, maxBinNumber_total);
+      if(h_Bundle[2][it_y]) FixOverflows(h_Bundle[2][it_y], maxBinNumber, maxBinNumber_total);
+      if(h_Bundle[3][it_y]) FixOverflows(h_Bundle[3][it_y], maxBinNumber, maxBinNumber_total);
 
       // Stack & Draw MC
       hs = new THStack("hs", "");
-      h_MC[0][it_y]->SetLineWidth(0);
-      h_MC[0][it_y]->SetFillColor(kRed-7);
-      hs->Add(h_MC[0][it_y]);
-      h_MC[1][it_y]->SetLineWidth(0);
-      h_MC[1][it_y]->SetFillColor(kGreen);
-      hs->Add(h_MC[1][it_y]);
-      h_MC[5][it_y]->SetLineWidth(0);
-      h_MC[5][it_y]->SetFillColor(kMagenta+2);
-      hs->Add(h_MC[5][it_y]);
-      h_MC[6][it_y]->SetLineWidth(0);
-      h_MC[6][it_y]->SetFillColor(kOrange);
-      hs->Add(h_MC[6][it_y]);
-      h_Bundle[0][it_y]->SetLineWidth(0);
-      h_Bundle[0][it_y]->SetFillColor(kSpring+10);
-      hs->Add(h_Bundle[0][it_y]);
+      if(year[it_y]=="2016"){
+        if(h_MC[0][it_y]) h_MC[0][it_y]->SetLineWidth(0);
+        if(h_MC[0][it_y]) h_MC[0][it_y]->SetFillColor(kGreen);
+        if(h_MC[0][it_y]) hs->Add(h_MC[0][it_y]);
+        if(h_MC[1][it_y]) h_MC[1][it_y]->SetLineWidth(0);
+        if(h_MC[1][it_y]) h_MC[1][it_y]->SetFillColor(kRed-7);
+        if(h_MC[1][it_y]) hs->Add(h_MC[1][it_y]);
+        if(h_MC[2][it_y]) h_MC[2][it_y]->SetLineWidth(0);
+        if(h_MC[2][it_y]) h_MC[2][it_y]->SetFillColor(kPink+10);
+        if(h_MC[2][it_y]) hs->Add(h_MC[2][it_y]);
+        if(h_MC[3][it_y]) h_MC[3][it_y]->SetLineWidth(0);
+        if(h_MC[3][it_y]) h_MC[3][it_y]->SetFillColor(kTeal);
+        if(h_MC[3][it_y]) hs->Add(h_MC[3][it_y]);
+      }
+      else{
+        if(h_MC[0][it_y]) h_MC[0][it_y]->SetLineWidth(0);
+        if(h_MC[0][it_y]) h_MC[0][it_y]->SetFillColor(kGreen);
+        if(h_MC[0][it_y]) hs->Add(h_MC[0][it_y]);
+        if(h_MC[1][it_y]) h_MC[1][it_y]->SetLineWidth(0);
+        if(h_MC[1][it_y]) h_MC[1][it_y]->SetFillColor(kRed-7);
+        if(h_MC[1][it_y]) hs->Add(h_MC[1][it_y]);
+        if(h_MC[2][it_y]) h_MC[2][it_y]->SetLineWidth(0);
+        if(h_MC[2][it_y]) h_MC[2][it_y]->SetFillColor(kMagenta+2);
+        if(h_MC[2][it_y]) hs->Add(h_MC[2][it_y]);
+        if(h_MC[3][it_y]) h_MC[3][it_y]->SetLineWidth(0);
+        if(h_MC[3][it_y]) h_MC[3][it_y]->SetFillColor(kPink);
+        if(h_MC[3][it_y]) hs->Add(h_MC[3][it_y]);
+        if(h_MC[4][it_y]) h_MC[4][it_y]->SetLineWidth(0);
+        if(h_MC[4][it_y]) h_MC[4][it_y]->SetFillColor(kYellow+1);
+        if(h_MC[4][it_y]) hs->Add(h_MC[4][it_y]);
+        if(h_MC[5][it_y]) h_MC[5][it_y]->SetLineWidth(0);
+        if(h_MC[5][it_y]) h_MC[5][it_y]->SetFillColor(kPink+10);
+        if(h_MC[5][it_y]) hs->Add(h_MC[5][it_y]);
+        if(h_MC[6][it_y]) h_MC[6][it_y]->SetLineWidth(0);
+        if(h_MC[6][it_y]) h_MC[6][it_y]->SetFillColor(kTeal);
+        if(h_MC[6][it_y]) hs->Add(h_MC[6][it_y]);
+      }
+      if(h_Bundle[0][it_y]) h_Bundle[0][it_y]->SetLineWidth(0);
+      if(h_Bundle[0][it_y]) h_Bundle[0][it_y]->SetFillColor(kGreen-6);
+      if(h_Bundle[0][it_y]) hs->Add(h_Bundle[0][it_y]);
+      if(h_Bundle[1][it_y]) h_Bundle[1][it_y]->SetLineWidth(0);
+      if(h_Bundle[1][it_y]) h_Bundle[1][it_y]->SetFillColor(kSpring+10);
+      if(h_Bundle[1][it_y]) hs->Add(h_Bundle[1][it_y]);
+      if(h_Bundle[2][it_y]) h_Bundle[2][it_y]->SetLineWidth(0);
+      if(h_Bundle[2][it_y]) h_Bundle[2][it_y]->SetFillColor(kRed);
+      if(h_Bundle[2][it_y]) hs->Add(h_Bundle[2][it_y]);
+      if(h_Bundle[3][it_y]) h_Bundle[3][it_y]->SetLineWidth(0);
+      if(h_Bundle[3][it_y]) h_Bundle[3][it_y]->SetFillColor(kOrange);
+      if(h_Bundle[3][it_y]) hs->Add(h_Bundle[3][it_y]);
       h_Fake[it_y]->SetLineWidth(0);
       h_Fake[it_y]->SetFillColor(kAzure+8);
       hs->Add(h_Fake[it_y]);
@@ -251,11 +385,25 @@ void makePlots_HN_ZZ(){
       // h_Error : A histogram for calcalating the total error of all backgrounds
       h_Error[it_y] = (TH1D*)h_Temp[it_y]->Clone();
       if(h_Fake[it_y]) h_Error[it_y]->Add(h_Fake[it_y]);
-      if(h_MC[0][it_y]) h_Error[it_y]->Add(h_MC[0][it_y]);
-      if(h_MC[1][it_y]) h_Error[it_y]->Add(h_MC[1][it_y]);
-      if(h_MC[5][it_y]) h_Error[it_y]->Add(h_MC[5][it_y]);
-      if(h_MC[6][it_y]) h_Error[it_y]->Add(h_MC[6][it_y]);
+      if(year[it_y]=="2016"){
+        if(h_MC[0][it_y]) h_Error[it_y]->Add(h_MC[0][it_y]);
+        if(h_MC[1][it_y]) h_Error[it_y]->Add(h_MC[1][it_y]);
+        if(h_MC[2][it_y]) h_Error[it_y]->Add(h_MC[2][it_y]);
+        if(h_MC[3][it_y]) h_Error[it_y]->Add(h_MC[3][it_y]);
+      }
+      else{
+        if(h_MC[0][it_y]) h_Error[it_y]->Add(h_MC[0][it_y]);
+        if(h_MC[1][it_y]) h_Error[it_y]->Add(h_MC[1][it_y]);
+        if(h_MC[2][it_y]) h_Error[it_y]->Add(h_MC[2][it_y]);
+        if(h_MC[3][it_y]) h_Error[it_y]->Add(h_MC[3][it_y]);
+        if(h_MC[4][it_y]) h_Error[it_y]->Add(h_MC[4][it_y]);
+        if(h_MC[5][it_y]) h_Error[it_y]->Add(h_MC[5][it_y]);
+        if(h_MC[6][it_y]) h_Error[it_y]->Add(h_MC[6][it_y]);
+      }
       if(h_Bundle[0][it_y]) h_Error[it_y]->Add(h_Bundle[0][it_y]);
+      if(h_Bundle[1][it_y]) h_Error[it_y]->Add(h_Bundle[1][it_y]);
+      if(h_Bundle[2][it_y]) h_Error[it_y]->Add(h_Bundle[2][it_y]);
+      if(h_Bundle[3][it_y]) h_Error[it_y]->Add(h_Bundle[3][it_y]);
 
       // Add systematic errors
       h_Error_Background1[it_y] = (TH1D*)h_Error[it_y]->Clone();  // Stat. + Syst. // Draw this first in the ratio plot
@@ -292,12 +440,26 @@ void makePlots_HN_ZZ(){
       else lg = new TLegend(0.6, 0.45, 0.9, 0.85);
       lg->AddEntry(h_Error[it_y], "Stat. + Syst. Uncertainty", "f");
       lg->AddEntry(h_Data[it_y], "Data", "lep");
-      lg->AddEntry(h_MC[6][it_y], "Others", "f");
-      lg->AddEntry(h_Bundle[0][it_y], "VVV", "f");
-      lg->AddEntry(h_MC[5][it_y], "ttZ", "f");
-      lg->AddEntry(h_MC[1][it_y], "ggZZ", "f");
       lg->AddEntry(h_Fake[it_y], "MisId. Lepton background", "f");
-      lg->AddEntry(h_MC[0][it_y], "ZZ", "f");
+      if(h_Bundle[3][it_y]) lg->AddEntry(h_Bundle[3][it_y], "ggZZ", "f");
+      if(h_Bundle[2][it_y]) lg->AddEntry(h_Bundle[2][it_y], "ttV", "f");
+      if(h_Bundle[1][it_y]) lg->AddEntry(h_Bundle[1][it_y], "VVV", "f");
+      if(h_Bundle[0][it_y]) lg->AddEntry(h_Bundle[0][it_y], "top", "f");
+      if(year[it_y]=="2016"){      
+        if(h_MC[3][it_y]) lg->AddEntry(h_MC[3][it_y], "ttbar", "f");
+        if(h_MC[2][it_y]) lg->AddEntry(h_MC[2][it_y], "DY", "f");
+        if(h_MC[1][it_y]) lg->AddEntry(h_MC[1][it_y], "ZZ", "f");
+        if(h_MC[0][it_y]) lg->AddEntry(h_MC[0][it_y], "WZ", "f");
+      }
+      else{      
+        if(h_MC[6][it_y]) lg->AddEntry(h_MC[6][it_y], "ttbar", "f");
+        if(h_MC[5][it_y]) lg->AddEntry(h_MC[5][it_y], "DY", "f");
+        if(h_MC[4][it_y]) lg->AddEntry(h_MC[4][it_y], "WW", "f");
+        if(h_MC[3][it_y]) lg->AddEntry(h_MC[3][it_y], "W#gamma", "f");
+        if(h_MC[2][it_y]) lg->AddEntry(h_MC[2][it_y], "Z#gamma", "f");
+        if(h_MC[1][it_y]) lg->AddEntry(h_MC[1][it_y], "ZZ", "f");
+        if(h_MC[0][it_y]) lg->AddEntry(h_MC[0][it_y], "WZ", "f");
+      }
       lg->SetBorderSize(0);
       lg->SetTextSize(0.03);
       lg->SetFillStyle(1001);
@@ -412,9 +574,9 @@ void makePlots_HN_ZZ(){
       //=========================================
       //==== Save plots
       //=========================================
-      gSystem->Exec("mkdir -p plots_HN_"+region+"/"+channel);
-      if(flag=="FR_ex") c1->SaveAs("./plots_HN_"+region+"/"+channel+"/"+variable+"_"+IDname+"_"+year.at(it_y)+"_FRex.png");
-      else c1->SaveAs("./plots_HN_"+region+"/"+channel+"/"+variable+"_"+IDname+"_"+year.at(it_y)+".png");
+      gSystem->Exec("mkdir -p plots_HN_SM/"+year.at(it_y)+"/"+region+"/"+channel);
+      if(flag=="FR_ex") c1->SaveAs("./plots_HN_SM/"+year.at(it_y)+"/"+region+"/"+channel+"/"+variable+"_"+IDname+"_"+year.at(it_y)+"_FRex.png");
+      else c1->SaveAs("./plots_HN_SM/"+year.at(it_y)+"/"+region+"/"+channel+"/"+variable+"_"+IDname+"_"+year.at(it_y)+".png");
 
       delete c_up;
       delete c_down;
@@ -427,7 +589,7 @@ void makePlots_HN_ZZ(){
       delete lg2;
       delete f_Data[it_y];
       delete f_Fake[it_y];
-      for(int it_mc=0; it_mc<MCNumber; it_mc++){
+      for(int it_mc=0; it_mc<MCNumber[it_y]; it_mc++){
         delete f_MC[it_mc][it_y];
         delete h_MC[it_mc][it_y];
       }
@@ -435,6 +597,9 @@ void makePlots_HN_ZZ(){
       delete h_Fake[it_y];
       delete h_Temp[it_y];
       delete h_Bundle[0][it_y];
+      delete h_Bundle[1][it_y];
+      delete h_Bundle[2][it_y]; //JH
+      delete h_Bundle[3][it_y]; //JH
       delete h_Error[it_y];
       delete h_Error_Background1[it_y];
       delete h_Error_Background2[it_y];

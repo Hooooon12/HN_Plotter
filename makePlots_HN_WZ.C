@@ -4,20 +4,21 @@
 // root -b -l -q makePlots_SSWW.C
 
 TString workdir = "/data6/Users/jihkim/SKFlatOutput/";
-TString SKFlatVersion = "Run2Legacy_v4";
+TString SKFlatVersion = "Run2UltraLegacy_v2";
 TString skim = "SkimTree_Dilepton";
+TString skim2 = "SkimTree_HNMultiLep";
 TString analyzer = "Control";
 TString file_path = "";
 //vector<TString> year = {"2016", "2017", "2018"};
 vector<TString> year = {"2016"};
-//vector<TString> luminosity = {"35.9", "41.5", "59.7"};
-vector<TString> luminosity = {"35.9"};
-vector<TString> ZGname = {"ZGTo2LG", "ZGToLLG_01J", "ZGToLLG_01J"};
+//vector<TString> luminosity = {"36.3", "41.5", "59.8"};
+vector<TString> luminosity = {"36.3"};
+//vector<TString> ZGname = {"ZGTo2LG", "ZGToLLG_01J", "ZGToLLG_01J"};
 //vector<TString> ZGname = {"ZGToLLG_01J"};
-vector<TString> WGname = {"WGToLNuG", "WGToLNuG_01J", "WGToLNuG_01J"};
+//vector<TString> WGname = {"WGToLNuG", "WGToLNuG_01J", "WGToLNuG_01J"};
 //vector<TString> WGname = {"WGToLNuG_01J"};
 
-const int MCNumber = 21; //JH
+const int MCNumber = 10;
 int maxBinNumber_total = 0, maxBinNumber_temp = 0;
 double minRange = 0., maxRange = 0., binContent = 0., binError = 0., binError_Stat = 0., binError_Syst = 0.;
 double max_Data = 0., max_Background = 0., max_Hist = 0.;
@@ -92,7 +93,7 @@ void makePlots_HN_WZ(){
 
       // PDname in 2018 : DoubleEG -> EGamma
       if(channel.Contains("ee")){
-        if(it_y == 2) PDname = "EGamma";
+        if(year[it_y]=="2018") PDname = "EGamma";
         else PDname = "DoubleEG";
       }
 
@@ -105,53 +106,52 @@ void makePlots_HN_WZ(){
       if(flag=="FR_ex") f_Fake[it_y] = new TFile(workdir+file_path+"RunFake__FR_ex__/DATA/"+analyzer+"_"+skim+"_"+PDname+".root"); //JH
       else f_Fake[it_y] = new TFile(workdir+file_path+"RunFake__/DATA/"+analyzer+"_"+skim+"_"+PDname+".root"); //JH
       //MC : VV
-      f_MC[0][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim+"_WZTo3LNu_powheg.root"); //JH
-      f_MC[1][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim+"_ZZTo4L_powheg.root");
-      f_MC[2][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim+"_"+ZGname.at(it_y)+".root");
-      //f_MC[3][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim+"_"+WGname.at(it_y)+".root"); //JH : WG has no entry in WZ CR
+      //f_MC[0][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim2+"_WZTo3LNu_mll0p1_powheg.root"); //JH : too many MC events...
+      f_MC[0][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim2+"_WZTo3LNu_mllmin4p0_powheg.root"); //JH
+      f_MC[1][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim2+"_ZZTo4L_m_1toInf_powheg.root");
       // MC : Top + gamma
-      f_MC[3][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim+"_TTG.root"); //JH
-      f_MC[4][it_y]  = new TFile(workdir+file_path+analyzer+"_TG.root"); //JH
+      f_MC[2][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim2+"_TTG.root"); //JH
+      //f_MC[4][it_y]  = new TFile(workdir+file_path+analyzer+"_TG.root"); //JH
       // MC : VVV
-      f_MC[5][it_y]  = new TFile(workdir+file_path+analyzer+"_WWW.root");
-      f_MC[6][it_y]  = new TFile(workdir+file_path+analyzer+"_WWZ.root");
-      f_MC[7][it_y]  = new TFile(workdir+file_path+analyzer+"_WZZ.root");
-      f_MC[8][it_y]  = new TFile(workdir+file_path+analyzer+"_ZZZ.root"); //JH
-      // MC : Top
-      f_MC[9][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim+"_ttWToLNu.root");
-      f_MC[10][it_y] = new TFile(workdir+file_path+analyzer+"_"+skim+"_ttZToLLNuNu.root");
-      f_MC[11][it_y] = new TFile(workdir+file_path+analyzer+"_"+skim+"_ttHToNonbb.root");
+      f_MC[3][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim2+"_WWW.root");
+      f_MC[4][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim2+"_WWZ.root");
+      f_MC[5][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim2+"_WZZ.root");
+      f_MC[6][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim2+"_ZZZ.root"); //JH
+      // MC : ttV
+      f_MC[7][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim2+"_ttWToLNu.root");
+      f_MC[8][it_y] = new TFile(workdir+file_path+analyzer+"_"+skim2+"_ttZToLLNuNu.root");
+      //f_MC[11][it_y] = new TFile(workdir+file_path+analyzer+"_"+skim2+"_ttHToNonbb.root");
       // MC : Higgs
-      f_MC[12][it_y] = new TFile(workdir+file_path+analyzer+"_ggHToZZTo4L.root");
-      f_MC[13][it_y] = new TFile(workdir+file_path+analyzer+"_VBF_HToZZTo4L.root");
-      f_MC[14][it_y] = new TFile(workdir+file_path+analyzer+"_VHToNonbb.root");
+      //f_MC[12][it_y] = new TFile(workdir+file_path+analyzer+"_ggHToZZTo4L.root");
+      //f_MC[13][it_y] = new TFile(workdir+file_path+analyzer+"_VBF_HToZZTo4L.root");
+      //f_MC[14][it_y] = new TFile(workdir+file_path+analyzer+"_VHToNonbb.root");
       // MC : ggZZTo4L
-      f_MC[15][it_y] = new TFile(workdir+file_path+analyzer+"_ggZZTo2e2mu.root");
-      f_MC[16][it_y] = new TFile(workdir+file_path+analyzer+"_ggZZTo2e2tau.root");
-      f_MC[17][it_y] = new TFile(workdir+file_path+analyzer+"_ggZZTo2mu2tau.root");
-      f_MC[18][it_y] = new TFile(workdir+file_path+analyzer+"_ggZZTo4e.root");
-      f_MC[19][it_y] = new TFile(workdir+file_path+analyzer+"_ggZZTo4mu.root");
-      f_MC[20][it_y] = new TFile(workdir+file_path+analyzer+"_ggZZTo4tau.root");
+      //f_MC[15][it_y] = new TFile(workdir+file_path+analyzer+"_ggZZTo2e2mu.root");
+      //f_MC[16][it_y] = new TFile(workdir+file_path+analyzer+"_ggZZTo2e2tau.root");
+      //f_MC[17][it_y] = new TFile(workdir+file_path+analyzer+"_ggZZTo2mu2tau.root");
+      //f_MC[18][it_y] = new TFile(workdir+file_path+analyzer+"_ggZZTo4e.root");
+      //f_MC[20][it_y] = new TFile(workdir+file_path+analyzer+"_ggZZTo4tau.root");
+      f_MC[9][it_y] = new TFile(workdir+file_path+analyzer+"_"+skim2+"_GluGluToZZto4mu.root");
 
       //=========================================
       //==== Get histograms
       //=========================================
 
       // DATA, Fake, MC
-			if(channel == "tot"){
+      if(channel == "tot"){
         h_Data[it_y]  = (TH1D*)f_Data[it_y]->Get(region+"/"+variable+"_"+IDname);
         h_Fake[it_y]  = (TH1D*)f_Fake[it_y]->Get(region+"/"+variable+"_"+IDname);
         for(int it_mc=0; it_mc<MCNumber; it_mc++){
           h_MC[it_mc][it_y] = (TH1D*)f_MC[it_mc][it_y]->Get(region+"/"+variable+"_"+IDname);
         }
-			}
-			else{
+      }
+      else{
         h_Data[it_y]  = (TH1D*)f_Data[it_y]->Get(region+"/"+channel+"/"+variable+"_"+IDname);
         h_Fake[it_y]  = (TH1D*)f_Fake[it_y]->Get(region+"/"+channel+"/"+variable+"_"+IDname);
         for(int it_mc=0; it_mc<MCNumber; it_mc++){
           h_MC[it_mc][it_y] = (TH1D*)f_MC[it_mc][it_y]->Get(region+"/"+channel+"/"+variable+"_"+IDname);
         }
-			}
+      }
 
       h_Data[it_y]->SetDirectory(0);
       h_Fake[it_y]->SetDirectory(0);
