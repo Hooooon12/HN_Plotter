@@ -20,7 +20,7 @@ vector<TString> luminosity = {"36.3", "41.5", "59.8"};
 //vector<TString> WGname = {"WGToLNuG", "WGToLNuG_01J", "WGToLNuG_01J"};
 //vector<TString> WGname = {"WGToLNuG_01J"};
 
-vector<int> MCNumber = {14, 20, 20};
+vector<int> MCNumber = {16, 20, 20};
 const int MCNumber_max = 20;
 int maxBinNumber_total = 0, maxBinNumber_temp = 0;
 double minRange = 0., maxRange = 0., binContent = 0., binError = 0., binError_Stat = 0., binError_Syst = 0.;
@@ -110,11 +110,20 @@ void makePlots_HN_SM(){
       else f_Fake[it_y] = new TFile(workdir+file_path+"RunFake__/DATA/"+analyzer+"_"+skim+"_"+PDname+".root"); //JH
       //MC : separate MC (major processes)
       if(year[it_y]=="2016"){
+        ////f_MC[0][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim2+"_WZTo3LNu_mll0p1_powheg.root"); //JH : too many MC events...
+        //f_MC[0][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim2+"_WZTo3LNu_mllmin4p0_powheg.root"); //WZ
+        //f_MC[1][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim2+"_ZZTo4L_m_1toInf_powheg.root"); //ZZ
+        //f_MC[2][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim2+"_ZGTo2LG_01J.root"); //ZG
+        //f_MC[3][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim2+"_WGToLNuG.root"); //WG
+        //f_MC[4][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim2+"_DYJets.root"); //DYJets
+        //f_MC[5][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim2+"_TTLL_powheg.root"); //TTLL
         //f_MC[0][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim2+"_WZTo3LNu_mll0p1_powheg.root"); //JH : too many MC events...
-        f_MC[0][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim2+"_WZTo3LNu_mllmin4p0_powheg.root"); //WZ
-        f_MC[1][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim2+"_ZZTo4L_m_1toInf_powheg.root"); //ZZ
-        f_MC[2][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim2+"_DYJets.root"); //DYJets
-        f_MC[3][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim2+"_TTLL_powheg.root"); //TTLL
+        f_MC[0][it_y]  = new TFile(workdir+file_path+analyzer+"_WZTo3LNu_mllmin4p0_powheg.root"); //WZ
+        f_MC[1][it_y]  = new TFile(workdir+file_path+analyzer+"_ZZTo4L_m_1toInf_powheg.root"); //ZZ
+        f_MC[2][it_y]  = new TFile(workdir+file_path+analyzer+"_ZGTo2LG_01J.root"); //ZG
+        f_MC[3][it_y]  = new TFile(workdir+file_path+analyzer+"_WGToLNuG.root"); //WG
+        f_MC[4][it_y]  = new TFile(workdir+file_path+analyzer+"_DYJets.root"); //DYJets
+        f_MC[5][it_y]  = new TFile(workdir+file_path+analyzer+"_TTLL_powheg.root"); //TTLL
       }
       else{
         //f_MC[0][it_y]  = new TFile(workdir+file_path+analyzer+"_WZTo3LNu_mll0p1_powheg.root"); //JH : too many MC events...
@@ -129,7 +138,8 @@ void makePlots_HN_SM(){
       }
       // MC : top
       if(year[it_y]=="2016"){
-        f_MC[4][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim2+"_TTG.root"); //JH
+        //f_MC[6][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim2+"_TTG.root"); //JH
+        f_MC[6][it_y]  = new TFile(workdir+file_path+analyzer+"_TTG.root"); //JH
       }
       else{
         f_MC[7][it_y]  = new TFile(workdir+file_path+analyzer+"_TTG.root"); //JH
@@ -139,10 +149,14 @@ void makePlots_HN_SM(){
       }
       // MC : VVV
       if(year[it_y]=="2016"){
-        f_MC[5][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim2+"_WWW.root");
-        f_MC[6][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim2+"_WWZ.root");
-        f_MC[7][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim2+"_WZZ.root");
-        f_MC[8][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim2+"_ZZZ.root"); //JH
+        //f_MC[7][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim2+"_WWW.root");
+        //f_MC[8][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim2+"_WWZ.root");
+        //f_MC[9][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim2+"_WZZ.root");
+        //f_MC[10][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim2+"_ZZZ.root"); //JH
+        f_MC[7][it_y]  = new TFile(workdir+file_path+analyzer+"_WWW.root");
+        f_MC[8][it_y]  = new TFile(workdir+file_path+analyzer+"_WWZ.root");
+        f_MC[9][it_y]  = new TFile(workdir+file_path+analyzer+"_WZZ.root");
+        f_MC[10][it_y]  = new TFile(workdir+file_path+analyzer+"_ZZZ.root"); //JH
       }
       else{
         f_MC[11][it_y]  = new TFile(workdir+file_path+analyzer+"_WWW.root");
@@ -152,8 +166,10 @@ void makePlots_HN_SM(){
       }
       // MC : ttV
       if(year[it_y]=="2016"){
-        f_MC[9][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim2+"_ttWToLNu.root");
-        f_MC[10][it_y] = new TFile(workdir+file_path+analyzer+"_"+skim2+"_ttZToLLNuNu.root");
+        //f_MC[11][it_y]  = new TFile(workdir+file_path+analyzer+"_"+skim2+"_ttWToLNu.root");
+        //f_MC[12][it_y] = new TFile(workdir+file_path+analyzer+"_"+skim2+"_ttZToLLNuNu.root");
+        f_MC[11][it_y]  = new TFile(workdir+file_path+analyzer+"_ttWToLNu.root");
+        f_MC[12][it_y] = new TFile(workdir+file_path+analyzer+"_ttZToLLNuNu.root");
       }
       else{
         f_MC[15][it_y]  = new TFile(workdir+file_path+analyzer+"_ttWToLNu.root");
@@ -166,9 +182,12 @@ void makePlots_HN_SM(){
       //f_MC[14][it_y] = new TFile(workdir+file_path+analyzer+"_VHToNonbb.root");
       // MC : GluGluToZZto4L
       if(year[it_y]=="2016"){
-        f_MC[11][it_y] = new TFile(workdir+file_path+analyzer+"_"+skim2+"_GluGluToZZto4mu.root");
-        f_MC[12][it_y] = new TFile(workdir+file_path+analyzer+"_"+skim2+"_GluGluToZZto4e.root");
-        f_MC[13][it_y] = new TFile(workdir+file_path+analyzer+"_"+skim2+"_GluGluToZZto2e2mu.root");
+        //f_MC[13][it_y] = new TFile(workdir+file_path+analyzer+"_"+skim2+"_GluGluToZZto4mu.root");
+        //f_MC[14][it_y] = new TFile(workdir+file_path+analyzer+"_"+skim2+"_GluGluToZZto4e.root");
+        //f_MC[15][it_y] = new TFile(workdir+file_path+analyzer+"_"+skim2+"_GluGluToZZto2e2mu.root");
+        f_MC[13][it_y] = new TFile(workdir+file_path+analyzer+"_GluGluToZZto4mu.root");
+        f_MC[14][it_y] = new TFile(workdir+file_path+analyzer+"_GluGluToZZto4e.root");
+        f_MC[15][it_y] = new TFile(workdir+file_path+analyzer+"_GluGluToZZto2e2mu.root");
       }
       else{
         f_MC[17][it_y] = new TFile(workdir+file_path+analyzer+"_GluGluToZZto4mu.root");
@@ -242,7 +261,10 @@ void makePlots_HN_SM(){
 
       // Remove overlapped physical processes (DY~ZG, TT~TTG) //JH : what about singletop vs TG?
       if(region.Contains("DY")||region.Contains("TT")){
-        if(year[it_y]=="2016") h_MC[4][it_y] = 0;
+        if(year[it_y]=="2016"){
+          h_MC[2][it_y] = 0;
+          h_MC[6][it_y] = 0;
+        }
         else{
           h_MC[2][it_y] = 0;
           h_MC[7][it_y] = 0;
@@ -250,8 +272,8 @@ void makePlots_HN_SM(){
       }
       else{
         if(year[it_y]=="2016"){
-          h_MC[2][it_y] = 0;
-          h_MC[3][it_y] = 0;
+          h_MC[4][it_y] = 0;
+          h_MC[5][it_y] = 0;
         }
         else{
           h_MC[5][it_y] = 0;
@@ -261,16 +283,16 @@ void makePlots_HN_SM(){
 
       // Make MC bundles
       if(year[it_y]=="2016"){      
-        for(int it_mc=4; it_mc<=4; it_mc++){
+        for(int it_mc=6; it_mc<=6; it_mc++){
           if(h_MC[it_mc][it_y]) h_Bundle[0][it_y]->Add(h_MC[it_mc][it_y]);
         }
-        for(int it_mc=5; it_mc<=8; it_mc++){
+        for(int it_mc=7; it_mc<=10; it_mc++){
           if(h_MC[it_mc][it_y]) h_Bundle[1][it_y]->Add(h_MC[it_mc][it_y]);
         }
-        for(int it_mc=9; it_mc<=10; it_mc++){
+        for(int it_mc=11; it_mc<=12; it_mc++){
           if(h_MC[it_mc][it_y]) h_Bundle[2][it_y]->Add(h_MC[it_mc][it_y]);
         }
-        for(int it_mc=11; it_mc<MCNumber[it_y]; it_mc++){
+        for(int it_mc=13; it_mc<MCNumber[it_y]; it_mc++){
           if(h_MC[it_mc][it_y]) h_Bundle[3][it_y]->Add(h_MC[it_mc][it_y]);
         }
       }
@@ -328,11 +350,17 @@ void makePlots_HN_SM(){
         if(h_MC[1][it_y]) h_MC[1][it_y]->SetFillColor(kRed-7);
         if(h_MC[1][it_y]) hs->Add(h_MC[1][it_y]);
         if(h_MC[2][it_y]) h_MC[2][it_y]->SetLineWidth(0);
-        if(h_MC[2][it_y]) h_MC[2][it_y]->SetFillColor(kPink+10);
+        if(h_MC[2][it_y]) h_MC[2][it_y]->SetFillColor(kMagenta+2);
         if(h_MC[2][it_y]) hs->Add(h_MC[2][it_y]);
         if(h_MC[3][it_y]) h_MC[3][it_y]->SetLineWidth(0);
-        if(h_MC[3][it_y]) h_MC[3][it_y]->SetFillColor(kTeal);
+        if(h_MC[3][it_y]) h_MC[3][it_y]->SetFillColor(kPink);
         if(h_MC[3][it_y]) hs->Add(h_MC[3][it_y]);
+        if(h_MC[4][it_y]) h_MC[4][it_y]->SetLineWidth(0);
+        if(h_MC[4][it_y]) h_MC[4][it_y]->SetFillColor(kPink+10);
+        if(h_MC[4][it_y]) hs->Add(h_MC[4][it_y]);
+        if(h_MC[5][it_y]) h_MC[5][it_y]->SetLineWidth(0);
+        if(h_MC[5][it_y]) h_MC[5][it_y]->SetFillColor(kTeal);
+        if(h_MC[5][it_y]) hs->Add(h_MC[5][it_y]);
       }
       else{
         if(h_MC[0][it_y]) h_MC[0][it_y]->SetLineWidth(0);
@@ -390,6 +418,8 @@ void makePlots_HN_SM(){
         if(h_MC[1][it_y]) h_Error[it_y]->Add(h_MC[1][it_y]);
         if(h_MC[2][it_y]) h_Error[it_y]->Add(h_MC[2][it_y]);
         if(h_MC[3][it_y]) h_Error[it_y]->Add(h_MC[3][it_y]);
+        if(h_MC[4][it_y]) h_Error[it_y]->Add(h_MC[4][it_y]);
+        if(h_MC[5][it_y]) h_Error[it_y]->Add(h_MC[5][it_y]);
       }
       else{
         if(h_MC[0][it_y]) h_Error[it_y]->Add(h_MC[0][it_y]);
@@ -446,8 +476,10 @@ void makePlots_HN_SM(){
       if(h_Bundle[1][it_y]) lg->AddEntry(h_Bundle[1][it_y], "VVV", "f");
       if(h_Bundle[0][it_y]) lg->AddEntry(h_Bundle[0][it_y], "top", "f");
       if(year[it_y]=="2016"){      
-        if(h_MC[3][it_y]) lg->AddEntry(h_MC[3][it_y], "ttbar", "f");
-        if(h_MC[2][it_y]) lg->AddEntry(h_MC[2][it_y], "DY", "f");
+        if(h_MC[5][it_y]) lg->AddEntry(h_MC[3][it_y], "ttbar", "f");
+        if(h_MC[4][it_y]) lg->AddEntry(h_MC[2][it_y], "DY", "f");
+        if(h_MC[3][it_y]) lg->AddEntry(h_MC[3][it_y], "W#gamma", "f");
+        if(h_MC[2][it_y]) lg->AddEntry(h_MC[2][it_y], "Z#gamma", "f");
         if(h_MC[1][it_y]) lg->AddEntry(h_MC[1][it_y], "ZZ", "f");
         if(h_MC[0][it_y]) lg->AddEntry(h_MC[0][it_y], "WZ", "f");
       }

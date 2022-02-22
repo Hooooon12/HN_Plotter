@@ -4,20 +4,21 @@
 // root -b -l -q makePlots_SSWW.C
 
 TString workdir = "/data6/Users/jihkim/SKFlatOutput/";
-TString SKFlatVersion = "Run2Legacy_v4";
+TString SKFlatVersion = "Run2UltraLegacy_v2";
 TString skim = "SkimTree_Dilepton";
+TString skim2 = "SkimTree_HNMultiLep";
 TString analyzer = "SSWW";
 TString file_path = "";
-//vector<TString> year = {"2016", "2017", "2018"};
-vector<TString> year = {"2016"};
-//vector<TString> luminosity = {"35.9", "41.5", "59.7"};
-vector<TString> luminosity = {"35.9"};
-vector<TString> ZGname = {"ZGTo2LG", "ZGToLLG_01J", "ZGToLLG_01J"};
+vector<TString> year = {"2016", "2017", "2018"};
+//vector<TString> year = {"2016"};
+vector<TString> luminosity = {"36.3", "41.5", "59.8"};
+//vector<TString> luminosity = {"36.3"};
+//vector<TString> ZGname = {"ZGTo2LG", "ZGToLLG_01J", "ZGToLLG_01J"};
 //vector<TString> ZGname = {"ZGToLLG_01J"};
-vector<TString> WGname = {"WGToLNuG", "WGToLNuG_01J", "WGToLNuG_01J"};
+//vector<TString> WGname = {"WGToLNuG", "WGToLNuG_01J", "WGToLNuG_01J"};
 //vector<TString> WGname = {"WGToLNuG_01J"};
 
-const int MCNumber = 10; //JH
+const int MCNumber = 14; //JH
 int maxBinNumber_total = 0, maxBinNumber_temp = 0;
 double minRange = 0., maxRange = 0., binContent = 0., binError = 0., binError_Stat = 0., binError_Syst = 0.;
 double max_Data = 0., max_Background = 0., max_Hist = 0.;
@@ -33,7 +34,7 @@ void makePlots_SSWW_SR_blind(){
     std::istringstream is(histline);
     TString this_line = histline;
     if(this_line.Contains("#")||this_line=="") continue;
-    TString channel, region, variable, IDname, txt_region, output_region, txt_variable, PDname, rebin_str, rebin_type, sel_type;
+    TString channel, region, variable, IDname, txt_region, output_region, txt_variable, PDname, rebin_str, rebin_type, sig_scale;
     int minBinNumber, maxBinNumber;
     is >> channel;
     is >> region;
@@ -43,7 +44,7 @@ void makePlots_SSWW_SR_blind(){
     is >> minBinNumber;
     is >> maxBinNumber;
     is >> rebin_type;
-    is >> sel_type;
+    is >> sig_scale;
 
     // txt_region, output_region
     if(channel.Contains("Muon")){
@@ -85,8 +86,7 @@ void makePlots_SSWW_SR_blind(){
 
     // Year loop
     for(int it_y=0; it_y<year.size(); it_y++){
-      if(sel_type=="New") file_path = SKFlatVersion+"/"+analyzer+"/"+year.at(it_y)+"/"+"jcln_inv__fatjet_veto__";
-      else file_path = SKFlatVersion+"/"+analyzer+"/"+year.at(it_y)+"/";
+      file_path = SKFlatVersion+"/"+analyzer+"/"+year.at(it_y)+"/"+"jcln_inv__fatjet_veto__";
 
       // PDname in 2018 : DoubleEG -> EGamma
       if(channel.Contains("Electron")){
@@ -100,33 +100,33 @@ void makePlots_SSWW_SR_blind(){
 
       // DATA, Signal, Fake
       //f_Data[it_y]   = new TFile(workdir+file_path+"DATA/"+analyzer+"_"+skim+"_"+PDname+".root");
-      f_SSWWTypeI[it_y]   = new TFile(workdir+file_path+"/"+analyzer+"_SSWW_HN_1500.root");
-      f_DYTypeI[it_y]   = new TFile(workdir+file_path+"/"+analyzer+"_DYTypeI_SS_MuMu_M1500.root");
-      f_VBFTypeI[it_y]   = new TFile(workdir+file_path+"/"+analyzer+"_VBFTypeI_SS_MuMu_M1500.root");
+      f_SSWWTypeI[it_y]   = new TFile(workdir+file_path+"/"+analyzer+"_SSWWTypeI_NLO_SF_M1500.root");
+      f_DYTypeI[it_y]   = new TFile(workdir+file_path+"/"+analyzer+"_DYTypeI_NLO_SF_M1500.root");
+      f_VBFTypeI[it_y]   = new TFile(workdir+file_path+"/"+analyzer+"_VBFTypeI_NLO_SF_M1500.root");
       f_Fake[it_y]   = new TFile(workdir+file_path+"RunFake__/DATA/"+analyzer+"_"+skim+"_"+PDname+".root");
       //MC : WpWp
-      f_MC[0][it_y]  = new TFile(workdir+file_path+"/"+analyzer+"_WpWp_EWK.root");
-      f_MC[1][it_y]  = new TFile(workdir+file_path+"/"+analyzer+"_WpWp_QCD.root");
-      // MC : top
-      if(sel_type=="New"){
-        f_MC[2][it_y]  = new TFile(workdir+file_path+"/"+analyzer+"_"+skim+"_ttWToLNu.root");
-        f_MC[3][it_y]  = new TFile(workdir+file_path+"/"+analyzer+"_"+skim+"_ttZToLLNuNu.root"); // let's use skim ttW, ttZ for all run.
-      }
-      else{
-        f_MC[2][it_y]  = new TFile(workdir+file_path+"/"+analyzer+"_ttWToLNu.root");
-        f_MC[3][it_y]  = new TFile(workdir+file_path+"/"+analyzer+"_ttZToLLNuNu.root");
-      }
+      f_MC[0][it_y]  = new TFile(workdir+file_path+"/"+analyzer+"_"+skim2+"_WpWpJJ_EWK.root");
+      f_MC[1][it_y]  = new TFile(workdir+file_path+"/"+analyzer+"_"+skim2+"_WpWpJJ_QCD.root");
+      // MC : ttV
+      f_MC[2][it_y]  = new TFile(workdir+file_path+"/"+analyzer+"_"+skim2+"_ttWToLNu.root");
+      f_MC[3][it_y]  = new TFile(workdir+file_path+"/"+analyzer+"_"+skim2+"_ttZToLLNuNu.root"); // let's use skim ttW, ttZ for all run.
       // MC : WZ
-      if(sel_type=="New") f_MC[4][it_y] = new TFile(workdir+file_path+"/"+analyzer+"_"+skim+"_WZTo3LNu_powheg.root");
-      else f_MC[4][it_y] = new TFile(workdir+file_path+"/"+analyzer+"_WZTo3LNu_powheg.root");
-      f_MC[5][it_y] = new TFile(workdir+file_path+"/"+analyzer+"_WLLJJ_WToLNu_EWK.root");
+      //f_MC[4][it_y] = new TFile(workdir+file_path+"/"+analyzer+"_"+skim2+"_WZTo3LNu_mll0p1_powheg.root");
+      f_MC[4][it_y] = new TFile(workdir+file_path+"/"+analyzer+"_"+skim2+"_WZTo3LNu_mllmin4p0_powheg.root");
+      f_MC[5][it_y] = new TFile(workdir+file_path+"/"+analyzer+"_"+skim2+"_WZJJToLNu.root");
       // MC : ZZ
-      if(sel_type=="New") f_MC[6][it_y] = new TFile(workdir+file_path+"/"+analyzer+"_"+skim+"_ZZTo4L_powheg.root");
-      else f_MC[6][it_y] = new TFile(workdir+file_path+"/"+analyzer+"_ZZTo4L_powheg.root");
-      f_MC[7][it_y] = new TFile(workdir+file_path+"/"+analyzer+"_ggZZTo2mu2tau.root");
-      f_MC[8][it_y] = new TFile(workdir+file_path+"/"+analyzer+"_ggZZTo4mu.root");
+      if(year[it_y]=="2016") f_MC[6][it_y] = new TFile(workdir+file_path+"/"+analyzer+"_"+skim2+"_ZZTo4L_m_1toInf_powheg.root");
+      else f_MC[6][it_y] = new TFile(workdir+file_path+"/"+analyzer+"_"+skim2+"_ZZTo4L_powheg.root");
+      f_MC[7][it_y] = new TFile(workdir+file_path+"/"+analyzer+"_"+skim2+"_GluGluToZZto2e2mu.root");
+      f_MC[8][it_y] = new TFile(workdir+file_path+"/"+analyzer+"_"+skim2+"_GluGluToZZto4e.root");
+      f_MC[9][it_y] = new TFile(workdir+file_path+"/"+analyzer+"_"+skim2+"_GluGluToZZto4mu.root");
+      // MC : WG
+      f_MC[10][it_y] = new TFile(workdir+file_path+"/"+analyzer+"_"+skim2+"_WGToLNuG.root");
+      f_MC[11][it_y] = new TFile(workdir+file_path+"/"+analyzer+"_"+skim2+"_WGJJToLNu.root");
+      // MC : ZG
+      f_MC[12][it_y] = new TFile(workdir+file_path+"/"+analyzer+"_"+skim2+"_ZGTo2LG_01J.root");
       // MC : tZq
-      f_MC[9][it_y] = new TFile(workdir+file_path+"/"+analyzer+"_tZq.root");
+      f_MC[13][it_y] = new TFile(workdir+file_path+"/"+analyzer+"_"+skim2+"_tZq.root");
 
       //=========================================
       //==== Get histograms
@@ -147,7 +147,7 @@ void makePlots_SSWW_SR_blind(){
       h_SSWWTypeI[it_y]->SetDirectory(0);
       h_DYTypeI[it_y]->SetDirectory(0);
       h_VBFTypeI[it_y]->SetDirectory(0);
-      h_Fake[it_y]->SetDirectory(0);
+      if(h_Fake[it_y]) h_Fake[it_y]->SetDirectory(0);
       for(int it_mc=0; it_mc<MCNumber; it_mc++){
         if(h_MC[it_mc][it_y]) h_MC[it_mc][it_y]->SetDirectory(0);
       }
@@ -167,7 +167,8 @@ void makePlots_SSWW_SR_blind(){
 
       // Make an empty histogram for adding backgrounds
       //h_Temp[it_y] = (TH1D*)h_Data[it_y]->Clone();
-      h_Temp[it_y] = (TH1D*)h_Fake[it_y]->Clone();
+      if(h_Fake[it_y]) h_Temp[it_y] = (TH1D*)h_Fake[it_y]->Clone();
+      else if(h_SSWWTypeI[it_y]) h_Temp[it_y] = (TH1D*)h_SSWWTypeI[it_y]->Clone();
       maxBinNumber_temp = h_Temp[it_y]->GetNbinsX();
       for(int i=0; i<maxBinNumber_temp+2; i++){
         h_Temp[it_y]->SetBinContent(i, 0.);
@@ -190,9 +191,10 @@ void makePlots_SSWW_SR_blind(){
 
       // Merge backgrounds
       h_Bundle[0][it_y] = (TH1D*)h_Temp[it_y]->Clone(); //JH : WpWp
-      h_Bundle[1][it_y] = (TH1D*)h_Temp[it_y]->Clone(); //JH : top
+      h_Bundle[1][it_y] = (TH1D*)h_Temp[it_y]->Clone(); //JH : ttV
       h_Bundle[2][it_y] = (TH1D*)h_Temp[it_y]->Clone(); //JH : WZ
       h_Bundle[3][it_y] = (TH1D*)h_Temp[it_y]->Clone(); //JH : ZZ
+      h_Bundle[4][it_y] = (TH1D*)h_Temp[it_y]->Clone(); //JH : WG
       for(int it_mc=0; it_mc<=1; it_mc++){
         if(h_MC[it_mc][it_y]) h_Bundle[0][it_y]->Add(h_MC[it_mc][it_y]);
       }
@@ -202,8 +204,11 @@ void makePlots_SSWW_SR_blind(){
       for(int it_mc=4; it_mc<=5; it_mc++){
         if(h_MC[it_mc][it_y]) h_Bundle[2][it_y]->Add(h_MC[it_mc][it_y]);
       }
-      for(int it_mc=6; it_mc<MCNumber; it_mc++){
+      for(int it_mc=6; it_mc<=9; it_mc++){
         if(h_MC[it_mc][it_y]) h_Bundle[3][it_y]->Add(h_MC[it_mc][it_y]);
+      }
+      for(int it_mc=10; it_mc<=11; it_mc++){
+        if(h_MC[it_mc][it_y]) h_Bundle[4][it_y]->Add(h_MC[it_mc][it_y]);
       }
 
       int rebin, Nbin;
@@ -230,17 +235,20 @@ void makePlots_SSWW_SR_blind(){
         h_SSWWTypeI[it_y] = (TH1D*)h_SSWWTypeI[it_y]->Rebin(Nbin,"",mapbin[variable]);
         h_DYTypeI[it_y] = (TH1D*)h_DYTypeI[it_y]->Rebin(Nbin,"",mapbin[variable]);
         h_VBFTypeI[it_y] = (TH1D*)h_VBFTypeI[it_y]->Rebin(Nbin,"",mapbin[variable]);
-        h_Fake[it_y] = (TH1D*)h_Fake[it_y]->Rebin(Nbin,"",mapbin[variable]);
-        h_Bundle[0][it_y] = (TH1D*)h_Bundle[0][it_y]->Rebin(Nbin,"",mapbin[variable]);
-        h_Bundle[1][it_y] = (TH1D*)h_Bundle[1][it_y]->Rebin(Nbin,"",mapbin[variable]);
-        h_Bundle[2][it_y] = (TH1D*)h_Bundle[2][it_y]->Rebin(Nbin,"",mapbin[variable]);
-        h_Bundle[3][it_y] = (TH1D*)h_Bundle[3][it_y]->Rebin(Nbin,"",mapbin[variable]);
-        h_MC[9][it_y] = (TH1D*)h_MC[9][it_y]->Rebin(Nbin,"",mapbin[variable]);
+        if(h_Fake[it_y]) h_Fake[it_y] = (TH1D*)h_Fake[it_y]->Rebin(Nbin,"",mapbin[variable]);
+        if(h_Bundle[0][it_y]) h_Bundle[0][it_y] = (TH1D*)h_Bundle[0][it_y]->Rebin(Nbin,"",mapbin[variable]);
+        if(h_Bundle[1][it_y]) h_Bundle[1][it_y] = (TH1D*)h_Bundle[1][it_y]->Rebin(Nbin,"",mapbin[variable]);
+        if(h_Bundle[2][it_y]) h_Bundle[2][it_y] = (TH1D*)h_Bundle[2][it_y]->Rebin(Nbin,"",mapbin[variable]);
+        if(h_Bundle[3][it_y]) h_Bundle[3][it_y] = (TH1D*)h_Bundle[3][it_y]->Rebin(Nbin,"",mapbin[variable]);
+        if(h_Bundle[4][it_y]) h_Bundle[4][it_y] = (TH1D*)h_Bundle[4][it_y]->Rebin(Nbin,"",mapbin[variable]);
+        if(h_MC[12][it_y]) h_MC[12][it_y] = (TH1D*)h_MC[12][it_y]->Rebin(Nbin,"",mapbin[variable]);
+        if(h_MC[13][it_y]) h_MC[13][it_y] = (TH1D*)h_MC[13][it_y]->Rebin(Nbin,"",mapbin[variable]);
         h_Temp[it_y] = (TH1D*)h_Temp[it_y]->Rebin(Nbin,"",mapbin[variable]);
 
         minBinNumber = 1;
         //maxBinNumber = h_Data[it_y]->GetNbinsX();
-        maxBinNumber = h_Fake[it_y]->GetNbinsX();
+        if(h_Fake[it_y]) maxBinNumber = h_Fake[it_y]->GetNbinsX();
+        else if(h_SSWWTypeI[it_y]) maxBinNumber = h_SSWWTypeI[it_y]->GetNbinsX();
       }
       else{
         rebin = rebin_str.Atoi();
@@ -248,56 +256,73 @@ void makePlots_SSWW_SR_blind(){
         h_SSWWTypeI[it_y]->Rebin(rebin);
         h_DYTypeI[it_y]->Rebin(rebin);
         h_VBFTypeI[it_y]->Rebin(rebin);
-        h_Fake[it_y]->Rebin(rebin);
-        h_Bundle[0][it_y]->Rebin(rebin);
-        h_Bundle[1][it_y]->Rebin(rebin);
-        h_Bundle[2][it_y]->Rebin(rebin);
-        h_Bundle[3][it_y]->Rebin(rebin);
-        h_MC[9][it_y]->Rebin(rebin);
+        if(h_Fake[it_y]) h_Fake[it_y]->Rebin(rebin);
+        if(h_Bundle[0][it_y]) h_Bundle[0][it_y]->Rebin(rebin);
+        if(h_Bundle[1][it_y]) h_Bundle[1][it_y]->Rebin(rebin);
+        if(h_Bundle[2][it_y]) h_Bundle[2][it_y]->Rebin(rebin);
+        if(h_Bundle[3][it_y]) h_Bundle[3][it_y]->Rebin(rebin);
+        if(h_Bundle[4][it_y]) h_Bundle[4][it_y]->Rebin(rebin);
+        if(h_MC[12][it_y]) h_MC[12][it_y]->Rebin(rebin);
+        if(h_MC[13][it_y]) h_MC[13][it_y]->Rebin(rebin);
         h_Temp[it_y]->Rebin(rebin);
       }
 
       //maxBinNumber_total = h_Data[it_y]->GetNbinsX();  // This is needed for adding overflow bins
-      maxBinNumber_total = h_Fake[it_y]->GetNbinsX();  // This is needed for adding overflow bins
+      if(h_Fake[it_y]) maxBinNumber_total = h_Fake[it_y]->GetNbinsX();  // This is needed for adding overflow bins
+      else if(h_SSWWTypeI[it_y]) maxBinNumber_total = h_SSWWTypeI[it_y]->GetNbinsX();  // This is needed for adding overflow bins
 
       // This is needed for drawing a line in the ratio plot
       //minRange = h_Data[it_y]->GetBinLowEdge(minBinNumber);
       //maxRange = h_Data[it_y]->GetBinLowEdge(maxBinNumber) + h_Data[it_y]->GetBinWidth(maxBinNumber);
-      minRange = h_Fake[it_y]->GetBinLowEdge(minBinNumber);
-      maxRange = h_Fake[it_y]->GetBinLowEdge(maxBinNumber) + h_Fake[it_y]->GetBinWidth(maxBinNumber);
+      if(h_Fake[it_y]){
+        minRange = h_Fake[it_y]->GetBinLowEdge(minBinNumber);
+        maxRange = h_Fake[it_y]->GetBinLowEdge(maxBinNumber) + h_Fake[it_y]->GetBinWidth(maxBinNumber);
+      }
+      else if(h_SSWWTypeI[it_y]){
+        minRange = h_SSWWTypeI[it_y]->GetBinLowEdge(minBinNumber);
+        maxRange = h_SSWWTypeI[it_y]->GetBinLowEdge(maxBinNumber) + h_SSWWTypeI[it_y]->GetBinWidth(maxBinNumber);
+      }
 
       // Fix overflows
       //FixOverflows(h_Data[it_y], maxBinNumber, maxBinNumber_total);
       FixOverflows(h_SSWWTypeI[it_y], maxBinNumber, maxBinNumber_total);
       FixOverflows(h_DYTypeI[it_y], maxBinNumber, maxBinNumber_total);
       FixOverflows(h_VBFTypeI[it_y], maxBinNumber, maxBinNumber_total);
-      FixOverflows(h_Fake[it_y], maxBinNumber, maxBinNumber_total);
-      FixOverflows(h_Bundle[0][it_y], maxBinNumber, maxBinNumber_total);
-      FixOverflows(h_Bundle[1][it_y], maxBinNumber, maxBinNumber_total);
-      FixOverflows(h_Bundle[2][it_y], maxBinNumber, maxBinNumber_total); //JH
-      FixOverflows(h_Bundle[3][it_y], maxBinNumber, maxBinNumber_total); //JH
-      FixOverflows(h_MC[9][it_y], maxBinNumber, maxBinNumber_total);
+      if(h_Fake[it_y]) FixOverflows(h_Fake[it_y], maxBinNumber, maxBinNumber_total);
+      if(h_Bundle[0][it_y]) FixOverflows(h_Bundle[0][it_y], maxBinNumber, maxBinNumber_total);
+      if(h_Bundle[1][it_y]) FixOverflows(h_Bundle[1][it_y], maxBinNumber, maxBinNumber_total);
+      if(h_Bundle[2][it_y]) FixOverflows(h_Bundle[2][it_y], maxBinNumber, maxBinNumber_total); //JH
+      if(h_Bundle[3][it_y]) FixOverflows(h_Bundle[3][it_y], maxBinNumber, maxBinNumber_total); //JH
+      if(h_Bundle[4][it_y]) FixOverflows(h_Bundle[4][it_y], maxBinNumber, maxBinNumber_total); //JH
+      if(h_MC[12][it_y]) FixOverflows(h_MC[12][it_y], maxBinNumber, maxBinNumber_total);
+      if(h_MC[13][it_y]) FixOverflows(h_MC[13][it_y], maxBinNumber, maxBinNumber_total);
 
       // Stack & Draw MC
       hs = new THStack("hs", "");
-      h_Fake[it_y]->SetLineWidth(0);
-      h_Fake[it_y]->SetFillColor(kCyan-4);
-      hs->Add(h_Fake[it_y]);
-      h_Bundle[0][it_y]->SetLineWidth(0);
-      h_Bundle[0][it_y]->SetFillColor(kPink+1);
-      hs->Add(h_Bundle[0][it_y]);
-      h_Bundle[1][it_y]->SetLineWidth(0);
-      h_Bundle[1][it_y]->SetFillColor(kBlue-9);
-      hs->Add(h_Bundle[1][it_y]);
-      h_Bundle[2][it_y]->SetLineWidth(0);
-      h_Bundle[2][it_y]->SetFillColor(kOrange);
-      hs->Add(h_Bundle[2][it_y]);
-      h_Bundle[3][it_y]->SetLineWidth(0);
-      h_Bundle[3][it_y]->SetFillColor(kTeal+6);
-      hs->Add(h_Bundle[3][it_y]);
-      h_MC[9][it_y]->SetLineWidth(0);
-      h_MC[9][it_y]->SetFillColor(kMagenta);
-      hs->Add(h_MC[9][it_y]);
+      if(h_Fake[it_y]) h_Fake[it_y]->SetLineWidth(0);
+      if(h_Fake[it_y]) h_Fake[it_y]->SetFillColor(kCyan-4);
+      if(h_Fake[it_y]) hs->Add(h_Fake[it_y]);
+      if(h_Bundle[0][it_y]) h_Bundle[0][it_y]->SetLineWidth(0);
+      if(h_Bundle[0][it_y]) h_Bundle[0][it_y]->SetFillColor(kPink+1);
+      if(h_Bundle[0][it_y]) hs->Add(h_Bundle[0][it_y]);
+      if(h_Bundle[1][it_y]) h_Bundle[1][it_y]->SetLineWidth(0);
+      if(h_Bundle[1][it_y]) h_Bundle[1][it_y]->SetFillColor(kBlue-9);
+      if(h_Bundle[1][it_y]) hs->Add(h_Bundle[1][it_y]);
+      if(h_Bundle[2][it_y]) h_Bundle[2][it_y]->SetLineWidth(0);
+      if(h_Bundle[2][it_y]) h_Bundle[2][it_y]->SetFillColor(kOrange);
+      if(h_Bundle[2][it_y]) hs->Add(h_Bundle[2][it_y]);
+      if(h_Bundle[3][it_y]) h_Bundle[3][it_y]->SetLineWidth(0);
+      if(h_Bundle[3][it_y]) h_Bundle[3][it_y]->SetFillColor(kTeal+6);
+      if(h_Bundle[3][it_y]) hs->Add(h_Bundle[3][it_y]);
+      if(h_Bundle[4][it_y]) h_Bundle[4][it_y]->SetLineWidth(0);
+      if(h_Bundle[4][it_y]) h_Bundle[4][it_y]->SetFillColor(kRed);
+      if(h_Bundle[4][it_y]) hs->Add(h_Bundle[4][it_y]);
+      if(h_MC[12][it_y]) h_MC[12][it_y]->SetLineWidth(0);
+      if(h_MC[12][it_y]) h_MC[12][it_y]->SetFillColor(kMagenta);
+      if(h_MC[12][it_y]) hs->Add(h_MC[12][it_y]);
+      if(h_MC[13][it_y]) h_MC[13][it_y]->SetLineWidth(0);
+      if(h_MC[13][it_y]) h_MC[13][it_y]->SetFillColor(kPink+6);
+      if(h_MC[13][it_y]) hs->Add(h_MC[13][it_y]);
       hs->Draw("hist");
       hs->SetTitle("");
       hs->GetXaxis()->SetLabelSize(0.);
@@ -315,14 +340,16 @@ void makePlots_SSWW_SR_blind(){
       if(h_Bundle[1][it_y]) h_Error[it_y]->Add(h_Bundle[1][it_y]);
       if(h_Bundle[2][it_y]) h_Error[it_y]->Add(h_Bundle[2][it_y]);
       if(h_Bundle[3][it_y]) h_Error[it_y]->Add(h_Bundle[3][it_y]);
-      if(h_MC[9][it_y]) h_Error[it_y]->Add(h_MC[9][it_y]);
+      if(h_Bundle[4][it_y]) h_Error[it_y]->Add(h_Bundle[4][it_y]);
+      if(h_MC[12][it_y]) h_Error[it_y]->Add(h_MC[12][it_y]);
+      if(h_MC[13][it_y]) h_Error[it_y]->Add(h_MC[13][it_y]);
 
       // Add systematic errors
       h_Error_Background1[it_y] = (TH1D*)h_Error[it_y]->Clone();  // Stat. + Syst. // Draw this first in the ratio plot
       h_Error_Background2[it_y] = (TH1D*)h_Error[it_y]->Clone();  // Stat. only
       for(int it_bin = minBinNumber; it_bin < maxBinNumber+1; it_bin++){
         binError_Stat = h_Error_Background1[it_y]->GetBinError(it_bin);
-        binError_Syst = h_Fake[it_y]->GetBinContent(it_bin)*0.3;
+        if(h_Fake[it_y]) binError_Syst = h_Fake[it_y]->GetBinContent(it_bin)*0.3;
         binError = sqrt(binError_Stat*binError_Stat + binError_Syst*binError_Syst);
         h_Error[it_y]->SetBinError(it_bin, binError);
       }
@@ -339,17 +366,24 @@ void makePlots_SSWW_SR_blind(){
       //h_Data[it_y]->SetMarkerColor(kBlack);
       //h_Data[it_y]->Draw("ep same");
   
-      // Draw SSWWTypeI
+      // Draw signals
+      float scale;
+      TString scale_lg = "";
+      if(sig_scale.Sizeof()==1) scale = 1.;
+      else if(sig_scale.Sizeof()>1){
+        scale = sig_scale.Atof();
+        scale_lg = sig_scale+" * ";
+      }
       h_SSWWTypeI[it_y]->SetLineColor(kRed);
       h_SSWWTypeI[it_y]->SetLineWidth(2);
       h_SSWWTypeI[it_y]->Draw("hist same");
       h_DYTypeI[it_y]->SetLineColor(kGreen);
       h_DYTypeI[it_y]->SetLineWidth(2);
-      h_DYTypeI[it_y]->Scale(1000000);
+      h_DYTypeI[it_y]->Scale(scale);
       h_DYTypeI[it_y]->Draw("hist same");
       h_VBFTypeI[it_y]->SetLineColor(kBlue);
       h_VBFTypeI[it_y]->SetLineWidth(2);
-      h_VBFTypeI[it_y]->Scale(1000000);
+      h_VBFTypeI[it_y]->Scale(scale);
       h_VBFTypeI[it_y]->Draw("hist same");
 
       // Set Min or Max of y axis
@@ -359,22 +393,24 @@ void makePlots_SSWW_SR_blind(){
       max_Hist = max_Background;
       hs->SetMinimum(0);
       //hs->SetMaximum(max_Hist*10); //JH : use this when using SetLogy
-      if(region=="SR") hs->SetMaximum(max_Hist+100); //JH : use this when drawing SSWW signal which has large entry
+      if(region=="SR"||region=="SR/M1500_1") hs->SetMaximum(max_Hist+100); //JH : use this when drawing SSWW signal which has large entry
       else hs->SetMaximum(max_Hist+10); //JH
 
       // Draw the legend
       lg = new TLegend(0.6, 0.45, 0.9, 0.85);
       //lg->AddEntry(h_Data[it_y], "Data", "lep");
       lg->AddEntry(h_SSWWTypeI[it_y], "SSWW_M1500 (V=1)", "l");
-      lg->AddEntry(h_DYTypeI[it_y], "100 * C.C.DY_M1500 (V=1)", "l");
-      lg->AddEntry(h_VBFTypeI[it_y], "100 * W#gamma_M1500 (V=1)", "l");
+      lg->AddEntry(h_DYTypeI[it_y], scale_lg+"C.C.DY_M1500 (V=1)", "l");
+      lg->AddEntry(h_VBFTypeI[it_y], scale_lg+"W#gamma_M1500 (V=1)", "l");
       lg->AddEntry(h_Error[it_y], "Stat. + Syst. Uncertainty", "f");
-      lg->AddEntry(h_Fake[it_y], "MisId. Lepton background", "f");
-      lg->AddEntry(h_Bundle[0][it_y], "W#pmW#pm", "f");
-      lg->AddEntry(h_Bundle[1][it_y], "top", "f");
-      lg->AddEntry(h_Bundle[2][it_y], "WZ", "f");
-      lg->AddEntry(h_Bundle[3][it_y], "ZZ", "f");
-      lg->AddEntry(h_MC[9][it_y], "tZq", "f");
+      if(h_Fake[it_y]) lg->AddEntry(h_Fake[it_y], "MisId. Lepton background", "f");
+      if(h_Bundle[0][it_y]) lg->AddEntry(h_Bundle[0][it_y], "W#pmW#pm", "f");
+      if(h_Bundle[1][it_y]) lg->AddEntry(h_Bundle[1][it_y], "ttV", "f");
+      if(h_Bundle[2][it_y]) lg->AddEntry(h_Bundle[2][it_y], "WZ", "f");
+      if(h_Bundle[3][it_y]) lg->AddEntry(h_Bundle[3][it_y], "ZZ", "f");
+      if(h_Bundle[4][it_y]) lg->AddEntry(h_Bundle[4][it_y], "WG", "f");
+      if(h_MC[12][it_y]) lg->AddEntry(h_MC[12][it_y], "ZG", "f");
+      if(h_MC[13][it_y]) lg->AddEntry(h_MC[13][it_y], "tZq", "f");
       lg->SetBorderSize(0);
       lg->SetTextSize(0.03);
       lg->SetFillStyle(1001);
@@ -420,7 +456,7 @@ void makePlots_SSWW_SR_blind(){
       for(int it_bin = minBinNumber; it_bin < maxBinNumber+1; it_bin++){
         binContent = h_Error_Background1[it_y]->GetBinContent(it_bin);
         binError_Stat = h_Error_Background1[it_y]->GetBinError(it_bin);
-        binError_Syst = h_Fake[it_y]->GetBinContent(it_bin)*0.3;
+        if(h_Fake[it_y]) binError_Syst = h_Fake[it_y]->GetBinContent(it_bin)*0.3;
         binError  = sqrt(binError_Stat*binError_Stat + binError_Syst*binError_Syst);
         if(binContent != 0.){
           binError = binError/binContent;
@@ -489,9 +525,8 @@ void makePlots_SSWW_SR_blind(){
       //=========================================
       //==== Save plots
       //=========================================
-      gSystem->Exec("mkdir -p plots_SSWW_SR_blind/plots_SSWW_"+region);
-      if(sel_type=="New") c1->SaveAs("./plots_SSWW_SR_blind/plots_SSWW_"+region+"/"+variable+"_"+IDname+"_"+year.at(it_y)+"_New.png");
-      else c1->SaveAs("./plots_SSWW_SR_blind/plots_SSWW_"+region+"/"+variable+"_"+IDname+"_"+year.at(it_y)+".png");
+      gSystem->Exec("mkdir -p plots_SSWW_SR_blind/"+year.at(it_y)+"/"+region);
+      c1->SaveAs("./plots_SSWW_SR_blind/"+year.at(it_y)+"/"+region+"/"+variable+"_"+IDname+"_"+year.at(it_y)+".png");
 
       delete c_up;
       delete c_down;
@@ -521,6 +556,7 @@ void makePlots_SSWW_SR_blind(){
       delete h_Bundle[1][it_y];
       delete h_Bundle[2][it_y]; //JH
       delete h_Bundle[3][it_y]; //JH
+      delete h_Bundle[4][it_y]; //JH
       delete h_Error[it_y];
       delete h_Error_Background1[it_y];
       delete h_Error_Background2[it_y];
