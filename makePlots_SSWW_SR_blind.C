@@ -1,4 +1,5 @@
 #include <iostream>
+#include "common.h"
 
 // How to run this code?
 // root -b -l -q makePlots_SSWW.C
@@ -178,6 +179,7 @@ void makePlots_SSWW_SR_blind(){
       //==== CANVAS
       c1 = new TCanvas("c1", "", 1000, 1000);
       c1->cd();
+      setTDRStyle();
 
       //==== PAD : drawing distribution
       c_up = new TPad("c_up", "", 0, 0.25, 1, 1);
@@ -496,6 +498,7 @@ void makePlots_SSWW_SR_blind(){
       h_Error_Background2[it_y]->SetFillStyle(1001);
       h_Error_Background2[it_y]->SetFillColor(kCyan);
       h_Error_Background2[it_y]->Draw("e2 same");
+      gPad->RedrawAxis(); //JH : https://root-forum.cern.ch/t/axiss-ticks-hidden-when-drawing-histogram-with-same/13667
  
       // Data/Background ratio
       //h_Ratio[it_y] = (TH1D*)h_Data[it_y]->Clone();
