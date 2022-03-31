@@ -350,7 +350,7 @@ void makePlots_HN_SM(){
         if(h_MC[1][it_y]) h_MC[1][it_y]->SetFillColor(kRed-7);
         if(h_MC[1][it_y]) hs->Add(h_MC[1][it_y]);
         if(h_MC[2][it_y]) h_MC[2][it_y]->SetLineWidth(0);
-        if(h_MC[2][it_y]) h_MC[2][it_y]->SetFillColor(kMagenta+2);
+        if(h_MC[2][it_y]) h_MC[2][it_y]->SetFillColor(kViolet);
         if(h_MC[2][it_y]) hs->Add(h_MC[2][it_y]);
         if(h_MC[3][it_y]) h_MC[3][it_y]->SetLineWidth(0);
         if(h_MC[3][it_y]) h_MC[3][it_y]->SetFillColor(kPink);
@@ -370,7 +370,7 @@ void makePlots_HN_SM(){
         if(h_MC[1][it_y]) h_MC[1][it_y]->SetFillColor(kRed-7);
         if(h_MC[1][it_y]) hs->Add(h_MC[1][it_y]);
         if(h_MC[2][it_y]) h_MC[2][it_y]->SetLineWidth(0);
-        if(h_MC[2][it_y]) h_MC[2][it_y]->SetFillColor(kMagenta+2);
+        if(h_MC[2][it_y]) h_MC[2][it_y]->SetFillColor(kViolet);
         if(h_MC[2][it_y]) hs->Add(h_MC[2][it_y]);
         if(h_MC[3][it_y]) h_MC[3][it_y]->SetLineWidth(0);
         if(h_MC[3][it_y]) h_MC[3][it_y]->SetFillColor(kPink);

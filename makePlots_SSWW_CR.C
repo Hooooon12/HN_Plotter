@@ -12,12 +12,12 @@ TString analyzer = "SSWW";
 TString file_path = "";
 //vector<TString> era = {"2016preVFP", "2016postVFP", "2017", "2018"};
 //vector<TString> era = {"2016preVFP", "2016postVFP"};
-//vector<TString> era = {"2016"};
-vector<TString> era = {"2016", "2017", "2018"};
+vector<TString> era = {"2016"};
+//vector<TString> era = {"2016", "2017", "2018"};
 //vector<TString> luminosity = {"19.5", "16.8", "41.5", "59.8"};
 //vector<TString> luminosity = {"19.5", "16.8"};
-//vector<TString> luminosity = {"36.3"};
-vector<TString> luminosity = {"36.3", "41.5", "59.8"};
+vector<TString> luminosity = {"36.3"};
+//vector<TString> luminosity = {"36.3", "41.5", "59.8"};
 //vector<TString> ZGname = {"ZGTo2LG", "ZGToLLG_01J", "ZGToLLG_01J"};
 //vector<TString> ZGname = {"ZGToLLG_01J"};
 //vector<TString> WGname = {"WGToLNuG", "WGToLNuG_01J", "WGToLNuG_01J"};
@@ -320,6 +320,8 @@ void makePlots_SSWW_CR(){
       h_Error[it_y]->Draw("e2 same");
   
       // Draw Data
+      h_Data[it_y]->Sumw2(kFALSE);
+      h_Data[it_y]->SetBinErrorOption(TH1::kPoisson);
       h_Data[it_y]->SetMarkerStyle(20);
       h_Data[it_y]->SetMarkerColor(kBlack);
       h_Data[it_y]->Draw("e0p same");
